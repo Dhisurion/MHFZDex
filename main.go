@@ -11,10 +11,6 @@ import (
 	"fyne.io/fyne/v2/widget"
 )
 
-var monsterdata = []string{"Brachydios", "Seregios", "Dhisufiroa"}
-var Equipdata = []string{"GS", "hammer", "Langsword"}
-var Itemdata = []string{"Potion", "Megapotion", "Max Potion"}
-
 func main() {
 	loadIcons()
 
@@ -70,24 +66,24 @@ func func3() {
 	log.Println("3tapped")
 }*/
 
-func MonsterWindow() *win {
+func MonsterWindow() *win { //launchess MonsterWindow
 	return &win{
 		buttons: make(map[string]*widget.Button, 19),
 	}
 }
 
-func ItemWindow() *win {
+func ItemWindow() *win { //launches ItemWindow
 	return &win{
 		buttons: make(map[string]*widget.Button, 19)}
 }
 
-func WeaponWindow() *win {
+func WeaponWindow() *win { //launches WeaponWindow
 	return &win{
 		buttons: make(map[string]*widget.Button, 19),
 	}
 }
 
-func ArmorWindow() *win {
+func ArmorWindow() *win { //launches ArmorWindow
 	return &win{
 		buttons: map[string]*widget.Button{},
 		window:  nil,

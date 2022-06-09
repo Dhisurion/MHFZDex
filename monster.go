@@ -31,8 +31,8 @@ func (w *win) MonsterUI(app fyne.App) {
 	id2 := 0 //passed to listupdate
 	//initIcons()
 	monsterpic := widget.NewIcon(theme.DocumentSaveIcon())
-	test := make([]string, 3)
-	data := make([]string, 3)
+	test := make([]string, 3)        //just a test array, it'll probably replaced by data retrieved from MongoDB later on
+	Monsterdata := make([]string, 3) //the  Monsterdata array used in list
 	test[0] = "Brachydios"
 	test[1] = "Rathalos"
 	test[2] = "Rathian"
@@ -40,32 +40,29 @@ func (w *win) MonsterUI(app fyne.App) {
 
 	//materials := container.NewGridWithRows(2)
 
-	for i := range data {
-		data[i] = strconv.Itoa(i+1) + " " + test[i]
+	for i := range Monsterdata { //init with data from test array
+		Monsterdata[i] = strconv.Itoa(i+1) + " " + test[i]
 	}
 
 	list := widget.NewList(
 		func() int {
-			return len(data)
+			return len(Monsterdata)
 		},
 		func() fyne.CanvasObject {
-			return container.NewHBox(widget.NewLabel("Template Object"), widget.NewIcon(theme.DocumentIcon()))
+			return container.NewHBox(widget.NewLabel("Template Object"), widget.NewIcon(theme.DocumentIcon())) //creates a HBox for every row of the list
 		},
 		func(id widget.ListItemID, item fyne.CanvasObject) {
-			item.(*fyne.Container).Objects[0].(*widget.Label).SetText(data[id])
+			item.(*fyne.Container).Objects[0].(*widget.Label).SetText(Monsterdata[id]) //assigns data to the box
 		},
 	)
-	for i := range data {
-		data[i] = strconv.Itoa(i+1) + " " + test[i]
-	}
 
-	icon := widget.NewIcon(nil)
-	label := widget.NewLabel("Select An Item From The List")
+	//icon := widget.NewIcon(nil)
+	//label := widget.NewLabel("Select An Item From The List")
 
 	var datat = [][]string{[]string{"Icon", "ItemName", "Quantity", "Price"},
 		[]string{"", "", "", ""}}
 
-	table := widget.NewTable(
+	table := widget.NewTable( //empty Table, for which there will be data assigned to on ButtonClick
 		func() (int, int) {
 			return len(datat), len(datat[0])
 		},
@@ -76,7 +73,7 @@ func (w *win) MonsterUI(app fyne.App) {
 			item.(*fyne.Container).Objects[1].(*widget.Label).SetText(datat[id.Row][id.Col])
 		})
 
-	LRButton := widget.NewButton("Low Rank", func() {
+	LRButton := widget.NewButton("Low Rank", func() { //ex: assign low rank mats to table
 		table = w.materialsLR(app, *table)
 		w.listUpdate(app, id2, list, monsterpic, table, materialButtons)
 	})
@@ -105,12 +102,12 @@ func (w *win) MonsterUI(app fyne.App) {
 
 	//test := []string{"Brachydios", "Rathalos", "Rathian"}
 
-	gbox := container.New(layout.NewGridLayout(3), list)
+	gbox := container.New(layout.NewGridLayout(3), list) //list with no data displayed as long as theres no item selected
 
 	list.OnSelected = func(id widget.ListItemID) {
 		id2 = id
-		label.SetText(data[id])
-		icon.SetResource(theme.DocumentIcon())
+		//label.SetText(Monsterdata[id])
+		//icon.SetResource(theme.DocumentIcon())
 
 		buttons := w.funcbuttons(app, list) //assigns fyne.CanvasObject(HBOX) to variable buttons
 		weakness := w.weakness(app, list)   //assigns fyne.CanvasObject(GridWithColumns) to variable weakness
@@ -125,8 +122,8 @@ func (w *win) MonsterUI(app fyne.App) {
 	}
 
 	list.OnUnselected = func(id widget.ListItemID) {
-		label.SetText("Select An Item From The List")
-		icon.SetResource(nil)
+		//label.SetText("Select An Item From The List")
+		//icon.SetResource(nil)
 		gbox = container.New(layout.NewGridLayout(3), list) //remove additional widgets
 		w.window.SetContent(gbox)                           //display gbox
 		w.window.Show()
@@ -226,12 +223,12 @@ func (w *win) funcbuttons(app fyne.App, li *widget.List) fyne.CanvasObject {
 		F[5] = FireTail.Text
 		F[6] = FireLegs.Text
 
-		NumberOfItemsEntryField := widget.NewEntry()
+		NumberOfItemsEntryField := widget.NewEntry() //init with "0", crash otherwise, because value is nil on start of the window
 		Entries, err := strconv.Atoi("0")
 		if err != nil {
 			panic(err)
 		}
-		EntryButton := widget.NewButton("Set", func() {
+		EntryButton := widget.NewButton("Set", func() { // this is the real data initialization
 			Entries, err = strconv.Atoi(NumberOfItemsEntryField.Text)
 			if err != nil {
 				panic(err)
@@ -239,10 +236,10 @@ func (w *win) funcbuttons(app fyne.App, li *widget.List) fyne.CanvasObject {
 
 		})
 
-		EntryContainer := container.NewHBox(widget.NewLabel("Number of Entries: "), NumberOfItemsEntryField, EntryButton)
+		EntryContainer := container.NewHBox(widget.NewLabel("Number of Entries: "), NumberOfItemsEntryField, EntryButton) //display everything Entry related in Box
 
 		inputLR := widget.NewButton("Low Rank", func() {
-			container.NewGridWithColumns(Entries,
+			container.NewGridWithColumns(Entries, //want to create a variable "Table" here for mats input
 				container.NewGridWithRows(4,
 					widget.NewEntry(),
 					widget.NewEntry(),
@@ -267,9 +264,9 @@ func (w *win) funcbuttons(app fyne.App, li *widget.List) fyne.CanvasObject {
 
 		})
 
-		inputmaterialbuttons := container.NewHBox(inputLR, inputHR, inputG, inputZenith, inputMusou)
+		inputmaterialbuttons := container.NewHBox(inputLR, inputHR, inputG, inputZenith, inputMusou) //container with all matButtons
 
-		Selector := widget.NewButton("Select", func() { //Button to open file dialog
+		Selector := widget.NewButton("Select", func() { //Button to open file dialog --> this is used to select an icon later on...not quite working yet
 			dialog.NewFileOpen(func(uc fyne.URIReadCloser, e error) {
 
 				if e != nil {
@@ -289,8 +286,9 @@ func (w *win) funcbuttons(app fyne.App, li *widget.List) fyne.CanvasObject {
 			w.window.Close()
 		})
 
-		cancel := widget.NewButton("Cancel", func() {
+		cancel := widget.NewButton("Cancel", func() { //cancel data-input
 			w.window.Close()
+
 		})
 
 		w.window.SetContent(container.New(layout.NewVBoxLayout(), ID, MonsterName, Selector, Weaknesses, EntryContainer, inputmaterialbuttons, addData, cancel)) //Layout for the "Insertion-Window"
@@ -309,7 +307,7 @@ func (w *win) funcbuttons(app fyne.App, li *widget.List) fyne.CanvasObject {
 
 func (w *win) weakness(app fyne.App, li *widget.List) fyne.CanvasObject {
 
-	var data = [][]string{[]string{"Hitzone", "Fire", "Thunder", "Water", "Ice", "Dragon"},
+	var data = [][]string{[]string{"Hitzone", "Fire", "Thunder", "Water", "Ice", "Dragon"}, //this inits the table-data, it'll be replaced by MongoDB data later on
 		[]string{"Head", "FH", "TH", "WH", "IH", "DH"},
 		[]string{"Wings", "FW", "TW", "WW", "IW", "DW"},
 		[]string{"Wing/Tail Wip", "FWTW", "TWTW", "WWTW", "IWTW", "DWTW"},
@@ -318,7 +316,7 @@ func (w *win) weakness(app fyne.App, li *widget.List) fyne.CanvasObject {
 		[]string{"Tail", "FT", "TT", "WT", "IT", "DT"},
 		[]string{"Legs", "FL", "TL", "WL", "IL", "DL"}}
 
-	table := widget.NewTable(
+	table := widget.NewTable( //initialization of table
 		func() (int, int) {
 			return len(data), len(data[0])
 		},
@@ -334,7 +332,7 @@ func (w *win) weakness(app fyne.App, li *widget.List) fyne.CanvasObject {
 
 func (w *win) materialsLR(app fyne.App, tr widget.Table) *widget.Table {
 
-	var data = [][]string{[]string{"Icon", "ItemName", "Quantity", "Price"},
+	var data = [][]string{[]string{"Icon", "ItemName", "Quantity", "Price"}, //ex : inits LR mat data
 		[]string{"", "Dummy LR", "1x", "100z"}}
 
 	table := widget.NewTable(
@@ -432,7 +430,8 @@ func (w *win) materialsMusou(app fyne.App, tr widget.Table) *widget.Table {
 
 }
 
-func (w *win) listUpdate(app fyne.App, id widget.ListItemID, list *widget.List, monsterpic fyne.CanvasObject, table *widget.Table, materialButtons fyne.CanvasObject) {
+func (w *win) listUpdate(app fyne.App, id widget.ListItemID, list *widget.List, monsterpic fyne.CanvasObject,
+	table *widget.Table, materialButtons fyne.CanvasObject) { //function updates materials when another Rank was selected
 	buttons := w.funcbuttons(app, list)
 	weakness := w.weakness(app, list)
 	materials := container.NewGridWithRows(2, materialButtons, table)

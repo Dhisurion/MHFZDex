@@ -22,8 +22,8 @@ func (w *win) ArmorUI(app fyne.App) {
 	icon := widget.NewIcon(nil)
 	label := widget.NewLabel("Select An Item From The List")
 
-	test := make([]string, 3)
-	Armordata := make([]string, 3)
+	test := make([]string, 3)      //just a test array, it'll probably replaced by data retrieved from MongoDB later on
+	Armordata := make([]string, 3) //Armordata used in list
 	test[0] = "DummyHelmet"
 	test[1] = "DummyChestpiece"
 	test[2] = "DummyLegs"
@@ -47,7 +47,7 @@ func (w *win) ArmorUI(app fyne.App) {
 
 	list.OnSelected = func(id widget.ListItemID) {
 		//id2 = id
-		label.SetText(Equipdata[id])
+		label.SetText(Armordata[id])
 		icon.SetResource(theme.DocumentIcon())
 
 		buttons := w.funcbuttons(app, list) //assigns fyne.CanvasObject(HBOX) to variable buttons

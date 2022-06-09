@@ -23,25 +23,25 @@ func (w *win) WeaponUI(app fyne.App) {
 	icon := widget.NewIcon(nil)
 	label := widget.NewLabel("Select An Item From The List")
 
-	test := make([]string, 3)
-	Equipmentdata := make([]string, 3)
+	test := make([]string, 3) //just a test array, it'll probably replaced by data retrieved from MongoDB later on
+	Weapondata := make([]string, 3)
 	test[0] = "Dummy GreatSword"
 	test[1] = "Dummy Lance"
 	test[2] = "Dummy Bow"
 
-	for i := range Equipmentdata {
-		Equipmentdata[i] = strconv.Itoa(i+1) + " " + test[i]
+	for i := range Weapondata {
+		Weapondata[i] = strconv.Itoa(i+1) + " " + test[i]
 	}
 
 	list := widget.NewList(
 		func() int {
-			return len(Equipmentdata)
+			return len(Weapondata)
 		},
 		func() fyne.CanvasObject {
 			return container.NewHBox(widget.NewLabel("Template Object"), widget.NewIcon(theme.DocumentIcon()))
 		},
 		func(id widget.ListItemID, item fyne.CanvasObject) {
-			item.(*fyne.Container).Objects[0].(*widget.Label).SetText(Equipmentdata[id])
+			item.(*fyne.Container).Objects[0].(*widget.Label).SetText(Weapondata[id])
 		},
 	)
 
@@ -49,7 +49,7 @@ func (w *win) WeaponUI(app fyne.App) {
 
 	list.OnSelected = func(id widget.ListItemID) {
 		//id2 = id
-		label.SetText(Equipdata[id])
+		label.SetText(Weapondata[id])
 		icon.SetResource(theme.DocumentIcon())
 
 		buttons := w.funcbuttons(app, list) //assigns fyne.CanvasObject(HBOX) to variable buttons
