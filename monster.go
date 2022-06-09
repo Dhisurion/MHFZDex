@@ -28,22 +28,17 @@ import (
 func (w *win) MonsterUI(app fyne.App) {
 	w.window = app.NewWindow("Monster")
 	iconScreen(w.window)
+	id2 := 0 //passed to listupdate
 	//initIcons()
-	//empty := widget.NewLabel("text")
+	monsterpic := widget.NewIcon(theme.DocumentSaveIcon())
 	test := make([]string, 3)
-
-	icon := widget.NewIcon(nil)
-	label := widget.NewLabel("Select An Item From The List")
-
-	//hbox := container.NewHBox(icon, label)
-
+	data := make([]string, 3)
 	test[0] = "Brachydios"
 	test[1] = "Rathalos"
 	test[2] = "Rathian"
+	materialButtons := container.NewHBox()
 
-	//test := []string{"Brachydios", "Rathalos", "Rathian"}
-
-	data := make([]string, 3)
+	//materials := container.NewGridWithRows(2)
 
 	for i := range data {
 		data[i] = strconv.Itoa(i+1) + " " + test[i]
@@ -60,27 +55,80 @@ func (w *win) MonsterUI(app fyne.App) {
 			item.(*fyne.Container).Objects[0].(*widget.Label).SetText(data[id])
 		},
 	)
+	for i := range data {
+		data[i] = strconv.Itoa(i+1) + " " + test[i]
+	}
+
+	icon := widget.NewIcon(nil)
+	label := widget.NewLabel("Select An Item From The List")
+
+	var datat = [][]string{[]string{"Icon", "ItemName", "Quantity", "Price"},
+		[]string{"", "", "", ""}}
+
+	table := widget.NewTable(
+		func() (int, int) {
+			return len(datat), len(datat[0])
+		},
+		func() fyne.CanvasObject {
+			return container.NewHBox(widget.NewIcon(theme.DocumentIcon()), widget.NewLabel("wide content"))
+		},
+		func(id widget.TableCellID, item fyne.CanvasObject) {
+			item.(*fyne.Container).Objects[1].(*widget.Label).SetText(datat[id.Row][id.Col])
+		})
+
+	LRButton := widget.NewButton("Low Rank", func() {
+		table = w.materialsLR(app, *table)
+		w.listUpdate(app, id2, list, monsterpic, table, materialButtons)
+	})
+
+	HRButton := widget.NewButton("High Rank", func() {
+		table = w.materialsHR(app, *table)
+		w.listUpdate(app, id2, list, monsterpic, table, materialButtons)
+	})
+
+	GButton := widget.NewButton("G Rank", func() {
+		table = w.materialsG(app, *table)
+		w.listUpdate(app, id2, list, monsterpic, table, materialButtons)
+	})
+
+	ZenithButton := widget.NewButton("Zenith Rank", func() {
+		table = w.materialsZenith(app, *table)
+		w.listUpdate(app, id2, list, monsterpic, table, materialButtons)
+	})
+
+	MusouButton := widget.NewButton("Musou Rank", func() {
+		table = w.materialsMusou(app, *table)
+		w.listUpdate(app, id2, list, monsterpic, table, materialButtons)
+	})
+
+	//hbox := container.NewHBox(icon, label)
+
+	//test := []string{"Brachydios", "Rathalos", "Rathian"}
 
 	gbox := container.New(layout.NewGridLayout(3), list)
 
 	list.OnSelected = func(id widget.ListItemID) {
+		id2 = id
 		label.SetText(data[id])
 		icon.SetResource(theme.DocumentIcon())
 
-		buttons := w.funcbuttons(app, list)                                                         //assigns fyne.CanvasObject(HBOX) to variable buttons
-		weakness := w.weakness(app, list)                                                           //assigns fyne.CanvasObject(GridWithColumns) to variable weakness
-		weaknesswidget := container.New(layout.NewGridWrapLayout(fyne.NewSize(600, 600)), weakness) //add additional widgets with Wrap to adjust TextSize
-		materials := w.materials(app)
-		gbox = container.New(layout.NewAdaptiveGridLayout(3), list, buttons, weaknesswidget, materials) //display gbox
+		buttons := w.funcbuttons(app, list) //assigns fyne.CanvasObject(HBOX) to variable buttons
+		weakness := w.weakness(app, list)   //assigns fyne.CanvasObject(GridWithColumns) to variable weakness
+		//weaknesswidget := container.New(layout.NewGridWrapLayout(fyne.NewSize(600, 600)), weakness) //add additional widgets with Wrap to adjust TextSize
+		//materials := w.materials(app)
+		materialButtons = container.NewHBox(LRButton, HRButton, GButton, ZenithButton, MusouButton)
+		materials := container.NewGridWithRows(2, materialButtons, table)
+		gbox = container.New(layout.NewGridLayout(3), list, monsterpic, materials, buttons, weakness) //display gbox
 		w.window.SetContent(gbox)
 		w.window.Show()
 
 	}
+
 	list.OnUnselected = func(id widget.ListItemID) {
 		label.SetText("Select An Item From The List")
 		icon.SetResource(nil)
-		gbox = container.New(layout.NewAdaptiveGridLayout(3), list) //remove additional widgets
-		w.window.SetContent(gbox)                                   //display gbox
+		gbox = container.New(layout.NewGridLayout(3), list) //remove additional widgets
+		w.window.SetContent(gbox)                           //display gbox
 		w.window.Show()
 	}
 	list.Select(125)
@@ -107,6 +155,7 @@ func (w *win) funcbuttons(app fyne.App, li *widget.List) fyne.CanvasObject {
 		//FH := widget.NewEntry()
 		ID := widget.NewEntry()
 		MonsterName := widget.NewEntry()
+
 		Weaknesses := container.NewGridWithColumns(6,
 			container.NewGridWithRows(8,
 				widget.NewLabel("Hitzone"),
@@ -177,6 +226,49 @@ func (w *win) funcbuttons(app fyne.App, li *widget.List) fyne.CanvasObject {
 		F[5] = FireTail.Text
 		F[6] = FireLegs.Text
 
+		NumberOfItemsEntryField := widget.NewEntry()
+		Entries, err := strconv.Atoi("0")
+		if err != nil {
+			panic(err)
+		}
+		EntryButton := widget.NewButton("Set", func() {
+			Entries, err = strconv.Atoi(NumberOfItemsEntryField.Text)
+			if err != nil {
+				panic(err)
+			}
+
+		})
+
+		EntryContainer := container.NewHBox(widget.NewLabel("Number of Entries: "), NumberOfItemsEntryField, EntryButton)
+
+		inputLR := widget.NewButton("Low Rank", func() {
+			container.NewGridWithColumns(Entries,
+				container.NewGridWithRows(4,
+					widget.NewEntry(),
+					widget.NewEntry(),
+					widget.NewEntry(),
+					widget.NewEntry()))
+
+		})
+
+		inputHR := widget.NewButton("High Rank", func() {
+
+		})
+
+		inputG := widget.NewButton("G Rank", func() {
+
+		})
+
+		inputZenith := widget.NewButton("Zenith Rank", func() {
+
+		})
+
+		inputMusou := widget.NewButton("Musou Rank", func() {
+
+		})
+
+		inputmaterialbuttons := container.NewHBox(inputLR, inputHR, inputG, inputZenith, inputMusou)
+
 		Selector := widget.NewButton("Select", func() { //Button to open file dialog
 			dialog.NewFileOpen(func(uc fyne.URIReadCloser, e error) {
 
@@ -201,7 +293,7 @@ func (w *win) funcbuttons(app fyne.App, li *widget.List) fyne.CanvasObject {
 			w.window.Close()
 		})
 
-		w.window.SetContent(container.New(layout.NewVBoxLayout(), ID, MonsterName, Selector, Weaknesses, addData, cancel)) //Layout for the "Insertion-Window"
+		w.window.SetContent(container.New(layout.NewVBoxLayout(), ID, MonsterName, Selector, Weaknesses, EntryContainer, inputmaterialbuttons, addData, cancel)) //Layout for the "Insertion-Window"
 		w.window.Resize(fyne.NewSize(400, 200))
 		w.window.CenterOnScreen()
 		w.window.Show()
@@ -216,6 +308,141 @@ func (w *win) funcbuttons(app fyne.App, li *widget.List) fyne.CanvasObject {
 }
 
 func (w *win) weakness(app fyne.App, li *widget.List) fyne.CanvasObject {
+
+	var data = [][]string{[]string{"Hitzone", "Fire", "Thunder", "Water", "Ice", "Dragon"},
+		[]string{"Head", "FH", "TH", "WH", "IH", "DH"},
+		[]string{"Wings", "FW", "TW", "WW", "IW", "DW"},
+		[]string{"Wing/Tail Wip", "FWTW", "TWTW", "WWTW", "IWTW", "DWTW"},
+		[]string{"Belly", "FBe", "TBe", "WBe", "IBe", "DBe"},
+		[]string{"Back", "FBck", "TBck", "WBck", "IBck", "DBck"},
+		[]string{"Tail", "FT", "TT", "WT", "IT", "DT"},
+		[]string{"Legs", "FL", "TL", "WL", "IL", "DL"}}
+
+	table := widget.NewTable(
+		func() (int, int) {
+			return len(data), len(data[0])
+		},
+		func() fyne.CanvasObject {
+			return widget.NewLabel("wide content")
+		},
+		func(i widget.TableCellID, o fyne.CanvasObject) {
+			o.(*widget.Label).SetText(data[i.Row][i.Col])
+		})
+
+	return table
+}
+
+func (w *win) materialsLR(app fyne.App, tr widget.Table) *widget.Table {
+
+	var data = [][]string{[]string{"Icon", "ItemName", "Quantity", "Price"},
+		[]string{"", "Dummy LR", "1x", "100z"}}
+
+	table := widget.NewTable(
+		func() (int, int) {
+			return len(data), len(data[0])
+		},
+		func() fyne.CanvasObject {
+			return container.NewHBox(widget.NewIcon(theme.DocumentIcon()), widget.NewLabel("wide content"))
+		},
+		func(id widget.TableCellID, item fyne.CanvasObject) {
+			item.(*fyne.Container).Objects[1].(*widget.Label).SetText(data[id.Row][id.Col])
+		})
+
+	return table
+
+}
+
+func (w *win) materialsHR(app fyne.App, tr widget.Table) *widget.Table {
+
+	var data = [][]string{[]string{"Icon", "ItemName", "Quantity", "Price"},
+		[]string{"", "Dummy HR", "1x", "100z"}}
+
+	table := widget.NewTable(
+		func() (int, int) {
+			return len(data), len(data[0])
+		},
+		func() fyne.CanvasObject {
+			return container.NewHBox(widget.NewIcon(theme.DocumentIcon()), widget.NewLabel("wide content"))
+		},
+		func(id widget.TableCellID, item fyne.CanvasObject) {
+			item.(*fyne.Container).Objects[1].(*widget.Label).SetText(data[id.Row][id.Col])
+		})
+
+	return table
+
+}
+
+func (w *win) materialsG(app fyne.App, tr widget.Table) *widget.Table {
+
+	var data = [][]string{[]string{"Icon", "ItemName", "Quantity", "Price"},
+		[]string{"", "Dummy G", "1x", "100z"}}
+
+	table := widget.NewTable(
+		func() (int, int) {
+			return len(data), len(data[0])
+		},
+		func() fyne.CanvasObject {
+			return container.NewHBox(widget.NewIcon(theme.DocumentIcon()), widget.NewLabel("wide content"))
+		},
+		func(id widget.TableCellID, item fyne.CanvasObject) {
+			item.(*fyne.Container).Objects[1].(*widget.Label).SetText(data[id.Row][id.Col])
+		})
+
+	return table
+
+}
+
+func (w *win) materialsZenith(app fyne.App, tr widget.Table) *widget.Table {
+
+	var data = [][]string{[]string{"Icon", "ItemName", "Quantity", "Price"},
+		[]string{"", "Dummy Zenith", "1x", "100z"}}
+
+	table := widget.NewTable(
+		func() (int, int) {
+			return len(data), len(data[0])
+		},
+		func() fyne.CanvasObject {
+			return container.NewHBox(widget.NewIcon(theme.DocumentIcon()), widget.NewLabel("wide content"))
+		},
+		func(id widget.TableCellID, item fyne.CanvasObject) {
+			item.(*fyne.Container).Objects[1].(*widget.Label).SetText(data[id.Row][id.Col])
+		})
+
+	return table
+
+}
+
+func (w *win) materialsMusou(app fyne.App, tr widget.Table) *widget.Table {
+
+	var data = [][]string{[]string{"Icon", "ItemName", "Quantity", "Price"},
+		[]string{"", "Dummy Musou", "1x", "100z"}}
+
+	table := widget.NewTable(
+		func() (int, int) {
+			return len(data), len(data[0])
+		},
+		func() fyne.CanvasObject {
+			return container.NewHBox(widget.NewIcon(theme.DocumentIcon()), widget.NewLabel("wide content"))
+		},
+		func(id widget.TableCellID, item fyne.CanvasObject) {
+			item.(*fyne.Container).Objects[1].(*widget.Label).SetText(data[id.Row][id.Col])
+		})
+
+	return table
+
+}
+
+func (w *win) listUpdate(app fyne.App, id widget.ListItemID, list *widget.List, monsterpic fyne.CanvasObject, table *widget.Table, materialButtons fyne.CanvasObject) {
+	buttons := w.funcbuttons(app, list)
+	weakness := w.weakness(app, list)
+	materials := container.NewGridWithRows(2, materialButtons, table)
+	gbox := container.New(layout.NewGridLayout(3), list, monsterpic, materials, buttons, weakness)
+
+	w.window.SetContent(gbox)
+	w.window.Show()
+}
+
+/*func (w *win) weakness(app fyne.App, li *widget.List) fyne.CanvasObject {
 	//w.window = app.NewWindow("Weakness")
 
 	return container.NewGridWithColumns(6,
@@ -285,24 +512,4 @@ func (w *win) weakness(app fyne.App, li *widget.List) fyne.CanvasObject {
 		),
 	)
 
-}
-
-func (w *win) materials(app fyne.App) fyne.CanvasObject {
-
-	var data = [][]string{[]string{"top left", "top right"},
-		[]string{"bottom left", "bottom right"}}
-
-	list := widget.NewTable(
-		func() (int, int) {
-			return len(data), len(data[0])
-		},
-		func() fyne.CanvasObject {
-			return widget.NewLabel("wide content")
-		},
-		func(i widget.TableCellID, o fyne.CanvasObject) {
-			o.(*widget.Label).SetText(data[i.Row][i.Col])
-		})
-
-	return list
-
-}
+}*/

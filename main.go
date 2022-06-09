@@ -42,18 +42,18 @@ func main() {
 		w.MonsterUI(myApp)
 
 	})
-	button2 := widget.NewButton("Ausrüstung", func() {
-		w := EquipmentWindow()
-		w.EquipUI(myApp)
+	button2 := widget.NewButton("Weapons", func() {
+		w := WeaponWindow()
+		w.WeaponUI(myApp)
 	})
-	button3 := widget.NewButton("Items", func() {
-		w := ItemWindow()
-		w.ItemUI(myApp)
+	button3 := widget.NewButton("Armor", func() {
+		w := ArmorWindow()
+		w.ArmorUI(myApp)
 	})
 
-	button4 := widget.NewButton("Test", func() {
-		w := TestWindow()
-		w.TestUI(myApp)
+	button4 := widget.NewButton("Item", func() {
+		w := ItemWindow()
+		w.ItemUI(myApp)
 	})
 	grid := container.New(layout.NewGridLayout(2), button1, button2, button3, button4)
 	myWindow.SetContent(grid)
@@ -76,18 +76,18 @@ func MonsterWindow() *win {
 	}
 }
 
-func EquipmentWindow() *win {
-	return &win{
-		buttons: make(map[string]*widget.Button, 19),
-	}
-}
-
 func ItemWindow() *win {
 	return &win{
 		buttons: make(map[string]*widget.Button, 19)}
 }
 
-func TestWindow() *win {
+func WeaponWindow() *win {
+	return &win{
+		buttons: make(map[string]*widget.Button, 19),
+	}
+}
+
+func ArmorWindow() *win {
 	return &win{
 		buttons: map[string]*widget.Button{},
 		window:  nil,
