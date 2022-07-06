@@ -50,7 +50,7 @@ func (w *win) ArmorUI(app fyne.App) {
 		label.SetText(Armordata[id])
 		icon.SetResource(theme.DocumentIcon())
 
-		buttons := w.funcbuttons(app, list) //assigns fyne.CanvasObject(HBOX) to variable buttons
+		buttons := w.funcbuttonsArmor(app, list) //assigns fyne.CanvasObject(HBOX) to variable buttons
 		//assigns fyne.CanvasObject(GridWithColumns) to variable weakness
 		//weaknesswidget := container.New(layout.NewGridWrapLayout(fyne.NewSize(600, 600)), weakness) //add additional widgets with Wrap to adjust TextSize
 		//materials := w.materials(app)

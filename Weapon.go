@@ -52,7 +52,7 @@ func (w *win) WeaponUI(app fyne.App) {
 		label.SetText(Weapondata[id])
 		icon.SetResource(theme.DocumentIcon())
 
-		buttons := w.funcbuttons(app, list) //assigns fyne.CanvasObject(HBOX) to variable buttons
+		buttons := w.weapon_funcbuttons(app, list) //assigns fyne.CanvasObject(HBOX) to variable buttons
 		//assigns fyne.CanvasObject(GridWithColumns) to variable weakness
 		//weaknesswidget := container.New(layout.NewGridWrapLayout(fyne.NewSize(600, 600)), weakness) //add additional widgets with Wrap to adjust TextSize
 		//materials := w.materials(app)
@@ -119,7 +119,7 @@ func (w *win) materialsupgradeWeapon(app fyne.App) fyne.CanvasObject {
 
 }
 
-func (w *win) funcbuttonsWeapon(app fyne.App, li *widget.List) fyne.CanvasObject {
+func (w *win) weapon_funcbuttons(app fyne.App, li *widget.List) fyne.CanvasObject {
 	add := widget.NewButton("Add", func() { //Button to Add Data
 		w.window = app.NewWindow("Add Data")
 		ID := widget.NewEntry()

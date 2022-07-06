@@ -7,12 +7,15 @@ import (
 	//"fyne.io/fyne/dialog"
 
 	//"container/list"
-	"io"
+
+	"log"
 	"strconv"
 
 	"fyne.io/fyne/v2"
+
 	"fyne.io/fyne/v2/container"
 	"fyne.io/fyne/v2/dialog"
+	"fyne.io/fyne/v2/storage"
 	"fyne.io/fyne/v2/theme"
 
 	"fyne.io/fyne/v2/layout"
@@ -30,7 +33,8 @@ func (w *win) MonsterUI(app fyne.App) {
 	iconScreen(w.window)
 	id2 := 0 //passed to listupdate
 	//initIcons()
-	monsterpic := widget.NewIcon(theme.DocumentSaveIcon())
+
+	monsterpic := widget.NewIcon(theme.CancelIcon())
 	test := make([]string, 3)        //just a test array, it'll probably replaced by data retrieved from MongoDB later on
 	Monsterdata := make([]string, 3) //the  Monsterdata array used in list
 	test[0] = "Brachydios"
@@ -99,18 +103,19 @@ func (w *win) MonsterUI(app fyne.App) {
 	})
 
 	//hbox := container.NewHBox(icon, label)
-
+	//buttons := w.monster_funcbuttons(app, list)
+	buttons := monster_funcbuttons(app)
 	//test := []string{"Brachydios", "Rathalos", "Rathian"}
 
-	gbox := container.New(layout.NewGridLayout(3), list) //list with no data displayed as long as theres no item selected
+	gbox := container.New(layout.NewGridLayout(3), list, buttons) //list with no data displayed as long as theres no item selected
 
 	list.OnSelected = func(id widget.ListItemID) {
 		id2 = id
 		//label.SetText(Monsterdata[id])
 		//icon.SetResource(theme.DocumentIcon())
 
-		buttons := w.funcbuttons(app, list) //assigns fyne.CanvasObject(HBOX) to variable buttons
-		weakness := w.weakness(app, list)   //assigns fyne.CanvasObject(GridWithColumns) to variable weakness
+		//assigns fyne.CanvasObject(HBOX) to variable buttons
+		weakness := w.weakness(app, list) //assigns fyne.CanvasObject(GridWithColumns) to variable weakness
 		//weaknesswidget := container.New(layout.NewGridWrapLayout(fyne.NewSize(600, 600)), weakness) //add additional widgets with Wrap to adjust TextSize
 		//materials := w.materials(app)
 		materialButtons = container.NewHBox(LRButton, HRButton, GButton, ZenithButton, MusouButton)
@@ -124,8 +129,8 @@ func (w *win) MonsterUI(app fyne.App) {
 	list.OnUnselected = func(id widget.ListItemID) {
 		//label.SetText("Select An Item From The List")
 		//icon.SetResource(nil)
-		gbox = container.New(layout.NewGridLayout(3), list) //remove additional widgets
-		w.window.SetContent(gbox)                           //display gbox
+		gbox = container.New(layout.NewGridLayout(3), list, buttons) //remove additional widgets
+		w.window.SetContent(gbox)                                    //display gbox
 		w.window.Show()
 	}
 	list.Select(125)
@@ -136,19 +141,20 @@ func (w *win) MonsterUI(app fyne.App) {
 
 }
 
-func (w *win) funcbuttons(app fyne.App, li *widget.List) fyne.CanvasObject {
-	var F [7]string
+func monster_funcbuttons(app fyne.App) fyne.CanvasObject {
 
-	FireHead := widget.NewEntry()
-	FireWings := widget.NewEntry()
-	FireWingTailTip := widget.NewEntry()
-	FireBelly := widget.NewEntry()
-	FireBack := widget.NewEntry()
-	FireTail := widget.NewEntry()
-	FireLegs := widget.NewEntry()
 	//F[0] = widget.NewEntry().Text
 	add := widget.NewButton("Add", func() { //Button to Add Data
-		w.window = app.NewWindow("Add Data")
+		wInput := app.NewWindow("Add Data")
+
+		var F [7]string
+		FireHead := widget.NewEntry()
+		FireWings := widget.NewEntry()
+		FireWingTailTip := widget.NewEntry()
+		FireBelly := widget.NewEntry()
+		FireBack := widget.NewEntry()
+		FireTail := widget.NewEntry()
+		FireLegs := widget.NewEntry()
 		//FH := widget.NewEntry()
 		ID := widget.NewEntry()
 		MonsterName := widget.NewEntry()
@@ -266,43 +272,45 @@ func (w *win) funcbuttons(app fyne.App, li *widget.List) fyne.CanvasObject {
 
 		inputmaterialbuttons := container.NewHBox(inputLR, inputHR, inputG, inputZenith, inputMusou) //container with all matButtons
 
-		Selector := widget.NewButton("Select", func() { //Button to open file dialog --> this is used to select an icon later on...not quite working yet
-			dialog.NewFileOpen(func(uc fyne.URIReadCloser, e error) {
-
-				if e != nil {
-					dialog.ShowInformation("Open Error", uc.URI().Path(), w.window)
+		Selector := widget.NewButton("File Open With Filter (.jpg or .png)", func() {
+			fd := dialog.NewFileOpen(func(reader fyne.URIReadCloser, err error) {
+				if err != nil {
+					dialog.ShowError(err, wInput)
 					return
 				}
-				if _, ok := uc.(io.ReadSeeker); ok {
-					dialog.ShowInformation("Seeker OK", uc.URI().Path(), w.window)
-
+				if reader == nil {
+					log.Println("Cancelled")
+					return
 				}
 
-			}, w.window).Show()
+				imageOpened(reader)
+			}, wInput)
+			fd.SetFilter(storage.NewExtensionFileFilter([]string{".png", ".jpg", ".jpeg"}))
+			fd.Show()
 		})
 
 		addData := widget.NewButton("Add", func() { //Button to add into MonsterName typed Data
 
-			w.window.Close()
+			wInput.Close()
 		})
 
 		cancel := widget.NewButton("Cancel", func() { //cancel data-input
-			w.window.Close()
+			wInput.Close()
 
 		})
 
-		w.window.SetContent(container.New(layout.NewVBoxLayout(), ID, MonsterName, Selector, Weaknesses, EntryContainer, inputmaterialbuttons, addData, cancel)) //Layout for the "Insertion-Window"
-		w.window.Resize(fyne.NewSize(400, 200))
-		w.window.CenterOnScreen()
-		w.window.Show()
+		wInput.SetContent(container.New(layout.NewVBoxLayout(), ID, MonsterName, Selector, Weaknesses, EntryContainer, inputmaterialbuttons, addData, cancel)) //Layout for the "Insertion-Window"
+		wInput.Resize(fyne.NewSize(400, 200))
+		wInput.CenterOnScreen()
+		wInput.Show()
 	})
 
-	exit := widget.NewButton("Close", func() { //added close button for whatever reason...cross-platform , maybe? idk
+	/*exit := widget.NewButton("Close", func() { //added close button for whatever reason...cross-platform , maybe? idk
 
 		w.window.Close()
-	})
+	})*/
 
-	return container.NewVBox(add, exit)
+	return container.NewVBox(add)
 }
 
 func (w *win) weakness(app fyne.App, li *widget.List) fyne.CanvasObject {
@@ -432,7 +440,7 @@ func (w *win) materialsMusou(app fyne.App, tr widget.Table) *widget.Table {
 
 func (w *win) listUpdate(app fyne.App, id widget.ListItemID, list *widget.List, monsterpic fyne.CanvasObject,
 	table *widget.Table, materialButtons fyne.CanvasObject) { //function updates materials when another Rank was selected
-	buttons := w.funcbuttons(app, list)
+	buttons := monster_funcbuttons(app)
 	weakness := w.weakness(app, list)
 	materials := container.NewGridWithRows(2, materialButtons, table)
 	gbox := container.New(layout.NewGridLayout(3), list, monsterpic, materials, buttons, weakness)

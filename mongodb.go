@@ -3,12 +3,20 @@ package main
 import (
 	"context"
 	"fmt"
+	"log"
+
 	"time"
 
+	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
 	"go.mongodb.org/mongo-driver/mongo/readpref"
 )
+
+var client *mongo.Client
+var ctx context.Context
+var cancel context.CancelFunc
+var err error
 
 // This is a user defined method to close resources.
 // This method closes mongoDB connection and cancel context.
@@ -40,6 +48,7 @@ func connect(uri string) (*mongo.Client, context.Context,
 
 	// mongo.Connect return mongo.Client method
 	client, err := mongo.Connect(ctx, options.Client().ApplyURI(uri))
+
 	return client, ctx, cancel, err
 }
 
@@ -57,4 +66,64 @@ func ping(client *mongo.Client, ctx context.Context) error {
 	}
 	fmt.Println("connected successfully")
 	return nil
+}
+
+func exInsertOne(client *mongo.Client, ctx context.Context) error {
+	coll := client.Database("Frontier").Collection("Items")
+	doc := bson.D{{"Name", "Potion"}, {"Rarity", 1}, {"Qty", 10}, {"Sell", 7}, {"Buy", 66}}
+	result, err := coll.InsertOne(context.TODO(), doc)
+
+	if err != nil {
+		fmt.Printf("Inserted document with _id: %v\n", result.InsertedID)
+	}
+	return nil
+}
+
+func InsertOne(client *mongo.Client, ctx context.Context) error {
+	coll := client.Database("Frontier").Collection("Items")
+	doc := bson.D{{"Name", tempitem.name}, {"Icon", tempitem.encoded}, {"Rarity", tempitem.rarity}, {"Qty", tempitem.qty}, {"Sell", tempitem.sell}, {"Buy", tempitem.buy}}
+	result, err := coll.InsertOne(context.TODO(), doc)
+
+	if err != nil {
+		fmt.Printf("Inserted document with _id: %v\n", result.InsertedID)
+	}
+	return nil
+}
+
+func ReadAllItems(client *mongo.Client, ctx context.Context) []ItemStruct {
+	coll := client.Database("Frontier").Collection("Items")
+	//doc := bson.D{{"Name", tempitem.name}, {"Icon", tempitem.encoded}, {"Rarity", tempitem.rarity}, {"Qty", tempitem.qty}, {"Sell", tempitem.sell}, {"Buy", tempitem.buy}}
+	var Items []ItemStruct
+	findOptions := options.Find()
+	cur, err := coll.Find(context.TODO(), bson.D{{}}, findOptions)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	for cur.Next(context.TODO()) {
+		var elem ItemStruct
+		err := cur.Decode(&elem)
+		if err != nil {
+			log.Fatal(err)
+		}
+
+		Items = append(Items, elem)
+	}
+
+	if err := cur.Err(); err != nil {
+		log.Fatal(err)
+	}
+
+	cur.Close(context.TODO())
+
+	return Items
+}
+
+func Count(client *mongo.Client, ctx context.Context, t string) int64 {
+	coll := client.Database("Frontier").Collection(t)
+	count, err := coll.CountDocuments(context.TODO(), nil)
+	if err != nil {
+		panic(err)
+	}
+	return count
 }

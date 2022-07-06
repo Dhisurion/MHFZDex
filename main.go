@@ -8,16 +8,24 @@ import (
 	"fyne.io/fyne/v2/app"
 	"fyne.io/fyne/v2/container"
 	"fyne.io/fyne/v2/layout"
+
 	"fyne.io/fyne/v2/widget"
 )
 
+var monster MonsterStruct
+var item ItemStruct
+var tempmonster TempMonsterStruct
+var tempitem TempItemStruct
+
+//var Monster[] MonsterStruct
+
 func main() {
-	loadIcons()
+	//loadIcons()
 
 	//Start DB
 	// Get Client, Context, CancelFunc and
 	// err from connect method.
-	client, ctx, cancel, err := connect("mongodb://localhost:27017")
+	client, ctx, cancel, err = connect("mongodb://localhost:27017")
 	if err != nil {
 		panic(err)
 	}
@@ -28,6 +36,7 @@ func main() {
 
 	// Ping mongoDB with Ping method
 	ping(client, ctx)
+	//exInsertOne(client, ctx)
 	//End DB
 
 	myApp := app.New()
@@ -57,14 +66,6 @@ func main() {
 	myWindow.CenterOnScreen()
 	myWindow.ShowAndRun()
 }
-
-/*func func2() {
-	log.Println("2tapped")
-}
-
-func func3() {
-	log.Println("3tapped")
-}*/
 
 func MonsterWindow() *win { //launchess MonsterWindow
 	return &win{
