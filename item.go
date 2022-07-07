@@ -5,6 +5,7 @@ import (
 
 	"encoding/base64"
 	"fmt"
+	"image/color"
 	_ "image/png"
 	"log"
 	"os"
@@ -87,6 +88,11 @@ func item_funcbuttons(app fyne.App) fyne.CanvasObject {
 		wInput := app.NewWindow("Add Data")
 
 		//ID := widget.NewEntry()
+		TextItemName := canvas.NewText("Itemname:", color.White)
+		TextItemRarity := canvas.NewText("Rarity:", color.White)
+		TextItemQty := canvas.NewText("Quantity:", color.White)
+		TextItemSell := canvas.NewText("Sell:", color.White)
+		TextItemBuy := canvas.NewText("Buy:", color.White)
 		InputItemName := widget.NewEntry()
 		InputItemRarity := widget.NewEntry()
 		InputItemQty := widget.NewEntry()
@@ -104,13 +110,14 @@ func item_funcbuttons(app fyne.App) fyne.CanvasObject {
 					return
 				}
 
-				imageOpened(reader)
+				//imageOpened(reader)
 			}, wInput)
 			fd.SetFilter(storage.NewExtensionFileFilter([]string{".png", ".jpg", ".jpeg"}))
 			fd.Show()
+
 		})
 
-		addData := widget.NewButton("Add", func() { //Button to add into MonsterName typed Data
+		addData := widget.NewButton("Add", func() { //Button to add into ItemName typed Data
 			tempitem.name = InputItemName.Text
 			tempitem.rarity, _ = strconv.Atoi(InputItemRarity.Text)
 			//tempitem.rarity, _= strconv.Atoi(InputItemRarity.Text)
@@ -131,7 +138,7 @@ func item_funcbuttons(app fyne.App) fyne.CanvasObject {
 
 		})
 
-		wInput.SetContent(container.New(layout.NewVBoxLayout(), InputItemName, InputItemIcon, InputItemQty, InputItemSell, InputItemBuy, addData, cancel)) //Layout for the "Insertion-Window"
+		wInput.SetContent(container.New(layout.NewVBoxLayout(), TextItemName, InputItemName, InputItemIcon, TextItemRarity, InputItemRarity, TextItemQty, InputItemQty, TextItemSell, InputItemSell, TextItemBuy, InputItemBuy, addData, cancel)) //Layout for the "Insertion-Window"
 		wInput.Resize(fyne.NewSize(400, 200))
 		wInput.CenterOnScreen()
 		wInput.Show()
