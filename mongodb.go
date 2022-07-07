@@ -81,7 +81,7 @@ func exInsertOne(client *mongo.Client, ctx context.Context) error {
 
 func InsertOne(client *mongo.Client, ctx context.Context) error {
 	coll := client.Database("Frontier").Collection("Items")
-	doc := bson.D{{"Name", tempitem.name}, {"Icon", tempitem.encoded}, {"Rarity", tempitem.rarity}, {"Qty", tempitem.qty}, {"Sell", tempitem.sell}, {"Buy", tempitem.buy}}
+	doc := bson.D{{"Name", tempitem.Name}, {"Icon", tempitem.Encoded}, {"Rarity", tempitem.Rarity}, {"Qty", tempitem.Qty}, {"Sell", tempitem.Sell}, {"Buy", tempitem.Buy}}
 	result, err := coll.InsertOne(context.TODO(), doc)
 
 	if err != nil {
@@ -90,33 +90,29 @@ func InsertOne(client *mongo.Client, ctx context.Context) error {
 	return nil
 }
 
-func ReadAllItems(client *mongo.Client, ctx context.Context) []ItemStruct {
+func ReadAllItems(client *mongo.Client, ctx context.Context) ([]ItemStruct, error) {
 	coll := client.Database("Frontier").Collection("Items")
-	//doc := bson.D{{"Name", tempitem.name}, {"Icon", tempitem.encoded}, {"Rarity", tempitem.rarity}, {"Qty", tempitem.qty}, {"Sell", tempitem.sell}, {"Buy", tempitem.buy}}
-	var Items []ItemStruct
-	findOptions := options.Find()
-	cur, err := coll.Find(context.TODO(), bson.D{{}}, findOptions)
+
+	var results []ItemStruct
+	cursor, err := coll.Find(ctx, bson.D{{}})
 	if err != nil {
 		log.Fatal(err)
 	}
-
-	for cur.Next(context.TODO()) {
-		var elem ItemStruct
-		err := cur.Decode(&elem)
+	defer cursor.Close(ctx)
+	for cursor.Next(ctx) {
+		var result ItemStruct
+		err := cursor.Decode(&result)
 		if err != nil {
 			log.Fatal(err)
 		}
-
-		Items = append(Items, elem)
+		results = append(results, result)
 	}
 
-	if err := cur.Err(); err != nil {
+	if err := cursor.Err(); err != nil {
 		log.Fatal(err)
 	}
 
-	cur.Close(context.TODO())
-
-	return Items
+	return results, err
 }
 
 func Count(client *mongo.Client, ctx context.Context, t string) int64 {
@@ -126,4 +122,30 @@ func Count(client *mongo.Client, ctx context.Context, t string) int64 {
 		panic(err)
 	}
 	return count
+}
+
+func UpdateOne(client *mongo.Client, ctx context.Context, Item ItemStruct) {
+	coll := client.Database("Frontier").Collection("Items")
+
+	result, err := coll.UpdateOne(ctx,
+		bson.M{"_id": Item.ID},
+		bson.D{
+			{"$set", bson.D{{"Name", tempitem.Name}, {"Icon", tempitem.Encoded}, {"Rarity", tempitem.Rarity}, {"Qty", tempitem.Qty}, {"Sell", tempitem.Sell}, {"Buy", tempitem.Buy}}},
+		},
+	)
+	if err != nil {
+		log.Fatal(err)
+	}
+	fmt.Printf("Updated %v Documents!\n", result.ModifiedCount)
+}
+
+func DeleteOne(client *mongo.Client, ctx context.Context, Item ItemStruct) {
+	coll := client.Database("Frontier").Collection("Items")
+
+	result, err := coll.DeleteOne(ctx,
+		bson.M{"_id": Item.ID})
+	if err != nil {
+		log.Fatal(err)
+	}
+	fmt.Printf("Deleted  %v Documents!\n", result.DeletedCount)
 }

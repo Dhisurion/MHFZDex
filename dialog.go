@@ -18,9 +18,9 @@ func imageOpened(f fyne.URIReadCloser) {
 	}
 	defer f.Close()
 
-	Monsterselectedicon = loadImage(f)
-	tempitem.encoded = base64.StdEncoding.EncodeToString([]byte(Monsterselectedicon.Resource.Content()))
-	showImage(f)
+	selectedicon = loadImage(f)
+	tempitem.Encoded = base64.StdEncoding.EncodeToString([]byte(selectedicon.Resource.Content()))
+	//showImage(f)
 }
 
 func showImage(f fyne.URIReadCloser) {

@@ -4,12 +4,10 @@ import (
 	"fyne.io/fyne/v2"
 	"fyne.io/fyne/v2/canvas"
 	"fyne.io/fyne/v2/widget"
+	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
-var Monsterselectedicon *canvas.Image //used
-var Itemselectedicon *canvas.Image    //in
-var Armorselectedicon *canvas.Image   //icon
-var Weaponselectedicon *canvas.Image  //selector
+var selectedicon *canvas.Image //used in file dialog
 //var encoded string
 
 type win struct {
@@ -36,27 +34,36 @@ type MonsterStruct struct {
 }
 
 type ItemStruct struct {
-	icon    *canvas.Image
-	name    string
-	rarity  int
-	qty     int
-	sell    int
-	buy     int
-	encoded string
+	iconb   []byte
+	ID      primitive.ObjectID `bson:"_id,omitempty"`
+	Name    string             `json:"Name" bson:"Name"`
+	Rarity  int                `json:"Rarity" bson:"Rarity"`
+	Qty     int                `json:"Qty" bson:"Qty"`
+	Sell    int                `json:"Sell" bson:"Sell"`
+	Buy     int                `json:"Buy" bson:"Buy"`
+	Encoded string             `json:"Icon" bson:"Icon"`
 }
 
 type TempMonsterStruct struct {
-	icon    *canvas.Image
-	name    string
-	encoded string
+	Name    string   `json:"Name" bson:"Name"`
+	Fire    [6]int   `json:"Fire" bson:"Fire"`
+	Thunder [6]int   `json:"Thunder" bson:"Thunder"`
+	Water   [6]int   `json:"Ice" bson:"Ice"`
+	Ice     [6]int   `json:"Water" bson:"Water"`
+	Dragon  [6]int   `json:"Dragon" bson:"Dragon"`
+	LRMat   []string `json:"LRMat" bson:"LRMat"`
+	HRMat   []string `json:"HRMat" bson:"HRMat"`
+	GouMat  []string `json:"GouMat" bson:"GouMat"`
+	GMat    []string `json:"GMat" bson:"GMat"`
+	ZMat    []string `json:"ZMat" bson:"ZMat"`
+	Encoded string   `json:"Icon" bson:"Icon"`
 }
 
 type TempItemStruct struct {
-	icon    *canvas.Image
-	name    string
-	rarity  int
-	qty     int
-	sell    int
-	buy     int
-	encoded string
+	Name    string `json:"Name" bson:"Name"`
+	Rarity  int    `json:"Rarity" bson:"Rarity"`
+	Qty     int    `json:"Qty" bson:"Qty"`
+	Sell    int    `json:"Sell" bson:"Sell"`
+	Buy     int    `json:"Buy" bson:"Buy"`
+	Encoded string `json:"Icon" bson:"Icon"`
 }

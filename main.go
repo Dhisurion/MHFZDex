@@ -5,6 +5,9 @@ import (
 
 	//fyne imports
 
+	"context"
+	"time"
+
 	"fyne.io/fyne/v2/app"
 	"fyne.io/fyne/v2/container"
 	"fyne.io/fyne/v2/layout"
@@ -25,6 +28,8 @@ func main() {
 	//Start DB
 	// Get Client, Context, CancelFunc and
 	// err from connect method.
+	ctx, _ := context.WithTimeout(context.Background(), 10*time.Second)
+
 	client, ctx, cancel, err = connect("mongodb://localhost:27017")
 	if err != nil {
 		panic(err)
