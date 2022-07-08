@@ -80,7 +80,7 @@ func (w *win) MonsterUI(app fyne.App) {
 	})
 
 	GouRButton := widget.NewButton("Gou Rank", func() {
-		table = w.materialsHR(app, *table)
+		table = w.materialsGouR(app, *table)
 		w.listUpdate(app, id2, list, monsterpic, table, materialButtons)
 	})
 
@@ -417,6 +417,26 @@ func (w *win) materialsHR(app fyne.App, tr widget.Table) *widget.Table {
 
 	var data = [][]string{[]string{"Icon", "ItemName", "Quantity", "Price"},
 		[]string{"", "Dummy HR", "1x", "100z"}}
+
+	table := widget.NewTable(
+		func() (int, int) {
+			return len(data), len(data[0])
+		},
+		func() fyne.CanvasObject {
+			return container.NewHBox(widget.NewIcon(theme.DocumentIcon()), widget.NewLabel("wide content"))
+		},
+		func(id widget.TableCellID, item fyne.CanvasObject) {
+			item.(*fyne.Container).Objects[1].(*widget.Label).SetText(data[id.Row][id.Col])
+		})
+
+	return table
+
+}
+
+func (w *win) materialsGouR(app fyne.App, tr widget.Table) *widget.Table {
+
+	var data = [][]string{[]string{"Icon", "ItemName", "Quantity", "Price"},
+		[]string{"", "Dummy Gou", "1x", "100z"}}
 
 	table := widget.NewTable(
 		func() (int, int) {
