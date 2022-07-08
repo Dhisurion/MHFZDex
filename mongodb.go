@@ -68,7 +68,7 @@ func ping(client *mongo.Client, ctx context.Context) error {
 	return nil
 }
 
-func exInsertOne(client *mongo.Client, ctx context.Context) error {
+/*func exInsertOne(client *mongo.Client, ctx context.Context) error {
 	coll := client.Database("Frontier").Collection("Items")
 	doc := bson.D{{"Name", "Potion"}, {"Rarity", 1}, {"Qty", 10}, {"Sell", 7}, {"Buy", 66}}
 	result, err := coll.InsertOne(context.TODO(), doc)
@@ -77,17 +77,17 @@ func exInsertOne(client *mongo.Client, ctx context.Context) error {
 		fmt.Printf("Inserted document with _id: %v\n", result.InsertedID)
 	}
 	return nil
-}
+}*/
 
-func InsertOne(client *mongo.Client, ctx context.Context) error {
+func InsertOneItem(client *mongo.Client, ctx context.Context) error {
 	coll := client.Database("Frontier").Collection("Items")
-	doc := bson.D{{"Name", tempitem.Name}, {"Icon", tempitem.Encoded}, {"Rarity", tempitem.Rarity}, {"Qty", tempitem.Qty}, {"Sell", tempitem.Sell}, {"Buy", tempitem.Buy}}
+	doc := bson.D{{"Name", tempitem.Name}, {"Icon", tempitem.EncodedIcon}, {"Rarity", tempitem.Rarity}, {"Qty", tempitem.Qty}, {"Sell", tempitem.Sell}, {"Buy", tempitem.Buy}}
 	result, err := coll.InsertOne(context.TODO(), doc)
 
 	if err != nil {
 		fmt.Printf("Inserted document with _id: %v\n", result.InsertedID)
 	}
-	return nil
+	return err
 }
 
 func ReadAllItems(client *mongo.Client, ctx context.Context) ([]ItemStruct, error) {
@@ -124,13 +124,13 @@ func Count(client *mongo.Client, ctx context.Context, t string) int64 {
 	return count
 }
 
-func UpdateOne(client *mongo.Client, ctx context.Context, Item ItemStruct) {
+func UpdateOneItem(client *mongo.Client, ctx context.Context, Item ItemStruct) {
 	coll := client.Database("Frontier").Collection("Items")
 
 	result, err := coll.UpdateOne(ctx,
 		bson.M{"_id": Item.ID},
 		bson.D{
-			{"$set", bson.D{{"Name", tempitem.Name}, {"Icon", tempitem.Encoded}, {"Rarity", tempitem.Rarity}, {"Qty", tempitem.Qty}, {"Sell", tempitem.Sell}, {"Buy", tempitem.Buy}}},
+			{"$set", bson.D{{"Name", tempitem.Name}, {"Icon", tempitem.EncodedIcon}, {"Rarity", tempitem.Rarity}, {"Qty", tempitem.Qty}, {"Sell", tempitem.Sell}, {"Buy", tempitem.Buy}}},
 		},
 	)
 	if err != nil {
@@ -139,7 +139,7 @@ func UpdateOne(client *mongo.Client, ctx context.Context, Item ItemStruct) {
 	fmt.Printf("Updated %v Documents!\n", result.ModifiedCount)
 }
 
-func DeleteOne(client *mongo.Client, ctx context.Context, Item ItemStruct) {
+func DeleteOneItem(client *mongo.Client, ctx context.Context, Item ItemStruct) {
 	coll := client.Database("Frontier").Collection("Items")
 
 	result, err := coll.DeleteOne(ctx,
@@ -174,4 +174,76 @@ func ReadAllWeapons(client *mongo.Client, ctx context.Context) ([]WeaponStruct, 
 	}
 
 	return results, err
+}
+
+//Monsters
+
+func InsertOneMonster(client *mongo.Client, ctx context.Context) error {
+	coll := client.Database("Frontier").Collection("Monsters")
+	doc := bson.D{{"Name", tempmonster.Name}, {"Icon", tempmonster.EncodedIcon}, {"Pic", tempmonster.EncodedPic},
+		{"FireWeakness", tempmonster.Fire}, {"ThunderWeakness", tempmonster.Thunder}, {"WaterWeakness", tempmonster.Water},
+		{"IceWeakness", tempmonster.Ice}, {"DragonWeakness", tempmonster.Dragon},
+		{"MaterialsLowRank", tempmonster.LRMat}, {"MaterialsHighRank", tempmonster.HRMat}, {"MaterialsGouRank", tempmonster.GouRMat},
+		{"MaterialsGRank", tempmonster.GRMat}, {"MaterialsZenithRank", tempmonster.ZRMat}}
+	result, err := coll.InsertOne(context.TODO(), doc)
+
+	if err != nil {
+		fmt.Printf("Inserted document with _id: %v\n", result.InsertedID)
+	}
+	return err
+}
+
+func ReadAllMonsters(client *mongo.Client, ctx context.Context) ([]MonsterStruct, error) {
+	coll := client.Database("Frontier").Collection("Monsters")
+
+	var results []MonsterStruct
+	cursor, err := coll.Find(ctx, bson.D{{}})
+	if err != nil {
+		log.Fatal(err)
+	}
+	defer cursor.Close(ctx)
+	for cursor.Next(ctx) {
+		var result MonsterStruct
+		err := cursor.Decode(&result)
+		if err != nil {
+			log.Fatal(err)
+		}
+		results = append(results, result)
+	}
+
+	if err := cursor.Err(); err != nil {
+		log.Fatal(err)
+	}
+
+	return results, err
+}
+
+func UpdateOneMonster(client *mongo.Client, ctx context.Context, Monster MonsterStruct) {
+	coll := client.Database("Frontier").Collection("Monsters")
+
+	result, err := coll.UpdateOne(ctx,
+		bson.M{"_id": Monster.ID},
+		bson.D{
+			{"$set", bson.D{{"Name", tempmonster.Name}, {"Icon", tempmonster.EncodedIcon}, {"Pic", tempmonster.EncodedPic},
+				{"FireWeakness", tempmonster.Fire}, {"ThunderWeakness", tempmonster.Thunder}, {"WaterWeakness", tempmonster.Water},
+				{"IceWeakness", tempmonster.Ice}, {"DragonWeakness", tempmonster.Dragon},
+				{"MaterialsLowRank", tempmonster.LRMat}, {"MaterialsHighRank", tempmonster.HRMat}, {"MaterialsGouRank", tempmonster.GouRMat},
+				{"MaterialsGRank", tempmonster.GRMat}, {"MaterialsZenithRank", tempmonster.ZRMat}}},
+		},
+	)
+	if err != nil {
+		log.Fatal(err)
+	}
+	fmt.Printf("Updated %v Documents!\n", result.ModifiedCount)
+}
+
+func DeleteOneMonster(client *mongo.Client, ctx context.Context, Monster MonsterStruct) {
+	coll := client.Database("Frontier").Collection("Monsters")
+
+	result, err := coll.DeleteOne(ctx,
+		bson.M{"_id": Monster.ID})
+	if err != nil {
+		log.Fatal(err)
+	}
+	fmt.Printf("Deleted  %v Documents!\n", result.DeletedCount)
 }

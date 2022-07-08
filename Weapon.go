@@ -1,14 +1,9 @@
 package main
 
 import (
-	"bufio"
-	"encoding/base64"
-	"fmt"
 	"image/color"
 	_ "image/png"
-	"io/ioutil"
 	"log"
-	"os"
 	"strconv"
 
 	"fyne.io/fyne/v2"
@@ -168,7 +163,7 @@ func (w *win) weapon_addbutton(app fyne.App) fyne.CanvasObject {
 					return
 				}
 
-				imageOpened(reader)
+				imageOpenedWeaponIcon(reader)
 			}, wInput)
 			fd.SetFilter(storage.NewExtensionFileFilter([]string{".png", ".jpg", ".jpeg"}))
 			fd.Show()
@@ -191,7 +186,7 @@ func (w *win) weapon_addbutton(app fyne.App) fyne.CanvasObject {
 			tempweapon.Material = InputWeaponMaterial.Text
 			tempweapon.Quantity, _ = strconv.Atoi(InputWeaponQuantity.Text)
 
-			InsertOne(client, ctx)
+			//InsertOneWeapon(client, ctx) //needs to be coded
 			w.listUpdateWeapon(app)
 			wInput.Close()
 
@@ -211,51 +206,6 @@ func (w *win) weapon_addbutton(app fyne.App) fyne.CanvasObject {
 	return container.NewVBox(add)
 }
 
-func decodeweapons() []WeaponStruct {
-	Weapons, err := ReadAllWeapons(client, ctx)
-	if err != nil {
-		panic(err)
-	}
-
-	for i := range Weapons {
-
-		decoded, err := base64.StdEncoding.DecodeString((Weapons[i].Encoded))
-		if err != nil {
-			fmt.Printf("Error decoding", err.Error())
-			panic(err)
-		}
-
-		f, err := os.Create("res/weapon/Weapon" + strconv.Itoa(i) + ".jpg")
-		if err != nil {
-			fmt.Printf("Error creating file", err.Error())
-			panic(err)
-		}
-
-		if _, err := f.Write(decoded); err != nil {
-			panic(err)
-		}
-
-		if err := f.Sync(); err != nil {
-			panic(err)
-		}
-
-		iconFile, err := os.Open("res/weapon/Weapon" + strconv.Itoa(i) + ".jpg")
-		if err != nil {
-			log.Fatal(err)
-		}
-
-		r := bufio.NewReader(iconFile)
-
-		b, err := ioutil.ReadAll(r)
-		if err != nil {
-			log.Fatal(err)
-		}
-
-		Weapons[i].iconb = b
-
-	}
-	return Weapons
-}
 func (w *win) listUpdateWeapon(app fyne.App) { //function updates materials when another Rank was selected
 	Weapons := decodeweapons()
 	weaponbuttons := w.weapon_addbutton(app)
@@ -335,7 +285,7 @@ func (w *win) weapon_updatebutton(app fyne.App, Weapon WeaponStruct) fyne.Canvas
 					return
 				}
 
-				imageOpened(reader)
+				imageOpenedWeaponIcon(reader)
 			}, wUpdate)
 			fd.SetFilter(storage.NewExtensionFileFilter([]string{".png", ".jpg", ".jpeg"}))
 			fd.Show()
@@ -358,7 +308,7 @@ func (w *win) weapon_updatebutton(app fyne.App, Weapon WeaponStruct) fyne.Canvas
 			tempweapon.Material = InputWeaponMaterial.Text
 			tempweapon.Quantity, _ = strconv.Atoi(InputWeaponQuantity.Text)
 
-			//UpdateOne(client, ctx, Weapon)
+			//UpdateOneWeapon(client, ctx, Weapon)
 			w.listUpdateItem(app)
 			wUpdate.Close()
 

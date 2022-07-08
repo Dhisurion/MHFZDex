@@ -11,17 +11,74 @@ import (
 	"fyne.io/fyne/v2/container"
 )
 
-func imageOpened(f fyne.URIReadCloser) {
+//Item Dialog
+
+func imageOpenedItemIcon(f fyne.URIReadCloser) {
 	if f == nil {
 		log.Println("Cancelled")
 		return
 	}
 	defer f.Close()
 
-	selectedicon = loadImage(f)
-	tempitem.Encoded = base64.StdEncoding.EncodeToString([]byte(selectedicon.Resource.Content()))
+	selectedItemicon = loadImage(f)
+	tempitem.EncodedIcon = base64.StdEncoding.EncodeToString([]byte(selectedItemicon.Resource.Content()))
 	//showImage(f)
 }
+
+//Monster Dialog
+func imageOpenedMonsterIcon(f fyne.URIReadCloser) {
+	if f == nil {
+		log.Println("Cancelled")
+		return
+	}
+	defer f.Close()
+
+	selectedMonstericon = loadImage(f)
+	tempmonster.EncodedIcon = base64.StdEncoding.EncodeToString([]byte(selectedMonstericon.Resource.Content()))
+
+}
+
+func imageOpenedMonsterPic(f fyne.URIReadCloser) {
+	if f == nil {
+		log.Println("Cancelled")
+		return
+	}
+	defer f.Close()
+
+	selectedMonsterPic = loadImage(f)
+	tempmonster.EncodedPic = base64.StdEncoding.EncodeToString([]byte(selectedMonsterPic.Resource.Content()))
+
+}
+
+//Weapon Dialog
+
+func imageOpenedWeaponIcon(f fyne.URIReadCloser) {
+	if f == nil {
+		log.Println("Cancelled")
+		return
+	}
+	defer f.Close()
+
+	selectedWeaponicon = loadImage(f)
+	tempitem.EncodedIcon = base64.StdEncoding.EncodeToString([]byte(selectedWeaponicon.Resource.Content()))
+
+}
+
+//Armor Dialog
+
+func imageOpenedArmorIcon(f fyne.URIReadCloser) {
+	if f == nil {
+		log.Println("Cancelled")
+		return
+	}
+	defer f.Close()
+
+	selectedArmoricon = loadImage(f)
+	tempitem.EncodedIcon = base64.StdEncoding.EncodeToString([]byte(selectedArmoricon.Resource.Content()))
+
+}
+
+//Other Image Functions
 
 func showImage(f fyne.URIReadCloser) {
 	img := loadImage(f)

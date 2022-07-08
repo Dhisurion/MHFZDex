@@ -1,14 +1,9 @@
 package main
 
 import (
-	"bufio"
-	"encoding/base64"
-	"fmt"
 	"image/color"
 	_ "image/png"
-	"io/ioutil"
 	"log"
-	"os"
 	"strconv"
 
 	"fyne.io/fyne/v2"
@@ -16,6 +11,7 @@ import (
 	"fyne.io/fyne/v2/container"
 	"fyne.io/fyne/v2/dialog"
 	"fyne.io/fyne/v2/storage"
+	"fyne.io/fyne/v2/theme"
 
 	"fyne.io/fyne/v2/layout"
 	"fyne.io/fyne/v2/widget"
@@ -33,12 +29,12 @@ func (w *win) ItemUI(app fyne.App) {
 			return len(Items)
 		},
 		func() fyne.CanvasObject {
-			return container.NewHBox(widget.NewIcon(fyne.NewStaticResource("Item", item.iconb)), widget.NewLabel("Template Object"), widget.NewLabel("Template Object"), widget.NewLabel("Template Object"), widget.NewLabel("Template Object"), widget.NewLabel("Template Object"))
+			return container.NewHBox(widget.NewIcon(fyne.NewStaticResource("Item", theme.AccountIcon().Content())), widget.NewLabel("Template Object"), widget.NewLabel("Template Object"), widget.NewLabel("Template Object"), widget.NewLabel("Template Object"), widget.NewLabel("Template Object"))
 		},
 		func(id widget.ListItemID, obj fyne.CanvasObject) {
 
 			c := obj.(*fyne.Container)
-			c.Objects[0].(*widget.Icon).SetResource(fyne.NewStaticResource(Items[id].Name, Items[id].iconb))
+			c.Objects[0].(*widget.Icon).SetResource(fyne.NewStaticResource(Items[id].Name, Items[id].icon))
 			c.Objects[1].(*widget.Label).SetText(Items[id].Name)
 			c.Objects[2].(*widget.Label).SetText("Rarity: " + strconv.Itoa((Items[id].Rarity)))
 			c.Objects[3].(*widget.Label).SetText("Qty: " + strconv.Itoa((Items[id].Qty)))
@@ -49,7 +45,7 @@ func (w *win) ItemUI(app fyne.App) {
 	)
 
 	list.OnSelected = func(id widget.ListItemID) {
-		icon := widget.NewIcon(fyne.NewStaticResource("icon", Items[id].iconb))
+		icon := widget.NewIcon(fyne.NewStaticResource("icon", Items[id].icon))
 
 		itemname := widget.NewLabel(Items[id].Name)
 
@@ -98,7 +94,7 @@ func (w *win) item_addbutton(app fyne.App) fyne.CanvasObject {
 		InputItemSell := widget.NewEntry()
 		InputItemBuy := widget.NewEntry()
 
-		InputItemIcon := widget.NewButton("File Open With Filter (.jpg or .png)", func() {
+		InputItemIcon := widget.NewButton("Choose Item-Icon (.jpg or .png)", func() {
 			fd := dialog.NewFileOpen(func(reader fyne.URIReadCloser, err error) {
 				if err != nil {
 					dialog.ShowError(err, wInput)
@@ -109,7 +105,7 @@ func (w *win) item_addbutton(app fyne.App) fyne.CanvasObject {
 					return
 				}
 
-				imageOpened(reader)
+				imageOpenedItemIcon(reader)
 			}, wInput)
 			fd.SetFilter(storage.NewExtensionFileFilter([]string{".png", ".jpg", ".jpeg"}))
 			fd.Show()
@@ -119,16 +115,12 @@ func (w *win) item_addbutton(app fyne.App) fyne.CanvasObject {
 		addData := widget.NewButton("Add", func() { //Button to add into ItemName typed Data
 			tempitem.Name = InputItemName.Text
 			tempitem.Rarity, _ = strconv.Atoi(InputItemRarity.Text)
-			//tempitem.rarity, _= strconv.Atoi(InputItemRarity.Text)
-
 			tempitem.Qty, _ = strconv.Atoi(InputItemQty.Text)
-
 			tempitem.Sell, _ = strconv.Atoi(InputItemSell.Text)
-
 			tempitem.Buy, _ = strconv.Atoi(InputItemBuy.Text)
 
-			InsertOne(client, ctx)
-			w.listUpdateItem(app)
+			InsertOneItem(client, ctx)
+			//w.listUpdateItem(app)
 			wInput.Close()
 
 		})
@@ -147,69 +139,23 @@ func (w *win) item_addbutton(app fyne.App) fyne.CanvasObject {
 	return container.NewVBox(add)
 }
 
-func decodeitems() []ItemStruct {
-	Items, err := ReadAllItems(client, ctx)
-	if err != nil {
-		panic(err)
-	}
-
-	for i := range Items {
-
-		decoded, err := base64.StdEncoding.DecodeString((Items[i].Encoded))
-		if err != nil {
-			fmt.Printf("Error decoding", err.Error())
-			panic(err)
-		}
-
-		f, err := os.Create("res/item/Item" + strconv.Itoa(i) + ".jpg")
-		if err != nil {
-			fmt.Printf("Error creating file", err.Error())
-			panic(err)
-		}
-
-		if _, err := f.Write(decoded); err != nil {
-			panic(err)
-		}
-
-		if err := f.Sync(); err != nil {
-			panic(err)
-		}
-
-		iconFile, err := os.Open("res/item/Item" + strconv.Itoa(i) + ".jpg")
-		if err != nil {
-			log.Fatal(err)
-		}
-
-		r := bufio.NewReader(iconFile)
-
-		b, err := ioutil.ReadAll(r)
-		if err != nil {
-			log.Fatal(err)
-		}
-
-		Items[i].iconb = b
-
-	}
-	return Items
-}
-
 func (w *win) listUpdateItem(app fyne.App) { //function updates materials when another Rank was selected
 	Items := decodeitems()
 	itembuttons := w.item_addbutton(app)
 
-	icon := widget.NewIcon(fyne.NewStaticResource("icon", Items[1].iconb))
+	icon := widget.NewIcon(fyne.NewStaticResource("icon", Items[1].icon))
 
 	list := widget.NewList(
 		func() int {
 			return len(Items)
 		},
 		func() fyne.CanvasObject {
-			return container.NewHBox(widget.NewIcon(fyne.NewStaticResource("Item", item.iconb)), widget.NewLabel("Template Object"), widget.NewLabel("Template Object"), widget.NewLabel("Template Object"), widget.NewLabel("Template Object"), widget.NewLabel("Template Object"))
+			return container.NewHBox(widget.NewIcon(fyne.NewStaticResource("Item", fyne.CurrentApp().Icon().Content())), widget.NewLabel("Template Object"), widget.NewLabel("Template Object"), widget.NewLabel("Template Object"), widget.NewLabel("Template Object"), widget.NewLabel("Template Object"))
 		},
 		func(id widget.ListItemID, obj fyne.CanvasObject) {
 
 			c := obj.(*fyne.Container)
-			c.Objects[0].(*widget.Icon).SetResource(fyne.NewStaticResource(Items[id].Name, Items[id].iconb))
+			c.Objects[0].(*widget.Icon).SetResource(fyne.NewStaticResource(Items[id].Name, Items[id].icon))
 			c.Objects[1].(*widget.Label).SetText(Items[id].Name)
 			c.Objects[2].(*widget.Label).SetText("Rarity: " + strconv.Itoa((Items[id].Rarity)))
 			c.Objects[3].(*widget.Label).SetText("Qty: " + strconv.Itoa((Items[id].Qty)))
@@ -252,7 +198,7 @@ func (w *win) item_updatebutton(app fyne.App, Item ItemStruct) fyne.CanvasObject
 					return
 				}
 
-				imageOpened(reader)
+				imageOpenedItemIcon(reader)
 			}, wUpdate)
 			fd.SetFilter(storage.NewExtensionFileFilter([]string{".png", ".jpg", ".jpeg"}))
 			fd.Show()
@@ -270,7 +216,7 @@ func (w *win) item_updatebutton(app fyne.App, Item ItemStruct) fyne.CanvasObject
 
 			tempitem.Buy, _ = strconv.Atoi(InputItemBuy.Text)
 
-			UpdateOne(client, ctx, Item)
+			UpdateOneItem(client, ctx, Item)
 			w.listUpdateItem(app)
 			wUpdate.Close()
 
@@ -292,7 +238,7 @@ func (w *win) item_updatebutton(app fyne.App, Item ItemStruct) fyne.CanvasObject
 
 func (w *win) item_deletebutton(app fyne.App, Item ItemStruct) fyne.CanvasObject {
 	delete := widget.NewButton("Delete", func() { //Button to Delete Items
-		DeleteOne(client, ctx, Item)
+		DeleteOneItem(client, ctx, Item)
 
 	})
 	return container.NewVBox(delete)

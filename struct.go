@@ -7,8 +7,11 @@ import (
 	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
-var selectedicon *canvas.Image //used in file dialog
-//var encoded string
+var selectedItemicon *canvas.Image
+var selectedMonstericon *canvas.Image
+var selectedWeaponicon *canvas.Image
+var selectedArmoricon *canvas.Image  //used in file dialog
+var selectedMonsterPic *canvas.Image //used as monster pic
 
 type win struct {
 	//equation string
@@ -27,14 +30,9 @@ type win struct {
 	Monsters []Monster
 }*/
 
-type MonsterStruct struct {
-	icon *canvas.Image
-	name string
-	//encoded string
-}
-
+//Item
 type ItemStruct struct {
-	iconb   []byte
+	icon    []byte
 	ID      primitive.ObjectID `bson:"_id,omitempty"`
 	Name    string             `json:"Name" bson:"Name"`
 	Rarity  int                `json:"Rarity" bson:"Rarity"`
@@ -44,6 +42,16 @@ type ItemStruct struct {
 	Encoded string             `json:"Icon" bson:"Icon"`
 }
 
+type TempItemStruct struct {
+	Name        string `json:"Name" bson:"Name"`
+	Rarity      int    `json:"Rarity" bson:"Rarity"`
+	Qty         int    `json:"Qty" bson:"Qty"`
+	Sell        int    `json:"Sell" bson:"Sell"`
+	Buy         int    `json:"Buy" bson:"Buy"`
+	EncodedIcon string `json:"Icon" bson:"Icon"`
+}
+
+//Weapon
 type WeaponStruct struct {
 	iconb        []byte
 	ID           primitive.ObjectID `bson:"_id,omitempty"`
@@ -61,29 +69,6 @@ type WeaponStruct struct {
 	Quantity     int                `json:"Quantity" bson:"Quantity"`
 	Encoded      string             `json:"Icon" bson:"Icon"`
 }
-type TempMonsterStruct struct {
-	Name    string   `json:"Name" bson:"Name"`
-	Fire    [6]int   `json:"Fire" bson:"Fire"`
-	Thunder [6]int   `json:"Thunder" bson:"Thunder"`
-	Water   [6]int   `json:"Ice" bson:"Ice"`
-	Ice     [6]int   `json:"Water" bson:"Water"`
-	Dragon  [6]int   `json:"Dragon" bson:"Dragon"`
-	LRMat   []string `json:"LRMat" bson:"LRMat"`
-	HRMat   []string `json:"HRMat" bson:"HRMat"`
-	GouMat  []string `json:"GouMat" bson:"GouMat"`
-	GMat    []string `json:"GMat" bson:"GMat"`
-	ZMat    []string `json:"ZMat" bson:"ZMat"`
-	Encoded string   `json:"Icon" bson:"Icon"`
-}
-
-type TempItemStruct struct {
-	Name    string `json:"Name" bson:"Name"`
-	Rarity  int    `json:"Rarity" bson:"Rarity"`
-	Qty     int    `json:"Qty" bson:"Qty"`
-	Sell    int    `json:"Sell" bson:"Sell"`
-	Buy     int    `json:"Buy" bson:"Buy"`
-	Encoded string `json:"Icon" bson:"Icon"`
-}
 
 type TempWeaponStruct struct {
 	Name         string `json:"Name" bson:"Name"`
@@ -99,4 +84,41 @@ type TempWeaponStruct struct {
 	Material     string `json:"Material" bson:"Material"`
 	Quantity     int    `json:"Quantity" bson:"Quantity"`
 	Encoded      string `json:"Icon" bson:"Icon"`
+}
+
+//Monster
+
+type MonsterStruct struct {
+	icon        []byte
+	pic         []byte
+	ID          primitive.ObjectID `bson:"_id,omitempty"`
+	Name        string             `json:"Name" bson:"Name"`
+	Fire        [7]int             `json:"FireWeakness" bson:"FireWeakness"`
+	Thunder     [7]int             `json:"ThunderWeakness" bson:"ThunderWeakness"`
+	Water       [7]int             `json:"WaterWeakness" bson:"WaterWeakness"`
+	Ice         [7]int             `json:"IceWeakness" bson:"IceWeakness"`
+	Dragon      [7]int             `json:"DragonWeakness" bson:"DragonWeakness"`
+	LRMat       [10]string         `json:"MaterialsLowRank" bson:"MaterialsLowRank"`
+	HRMat       [10]string         `json:"MaterialsHighRank" bson:"MaterialsHighRank"`
+	GouRMat     [10]string         `json:"MaterialsGouRank" bson:"MaterialsGouRank"`
+	GRMat       [10]string         `json:"MaterialsGRank" bson:"MaterialsGRank"`
+	ZRMat       [10]string         `json:"MaterialsZenithRank" bson:"MaterialsZenithRank"`
+	EncodedIcon string             `json:"Icon" bson:"Icon"`
+	EncodedPic  string             `json:"Pic" bson:"Pic"`
+}
+
+type TempMonsterStruct struct {
+	Name        string     `json:"Name" bson:"Name"`
+	Fire        [7]int     `json:"FireWeakness" bson:"FireWeakness"`
+	Thunder     [7]int     `json:"ThunderWeakness" bson:"ThunderWeakness"`
+	Water       [7]int     `json:"WaterWeakness" bson:"WaterWeakness"`
+	Ice         [7]int     `json:"IceWeakness" bson:"IceWeakness"`
+	Dragon      [7]int     `json:"DragonWeakness" bson:"DragonWeakness"`
+	LRMat       [10]string `json:"MaterialsLowRank" bson:"MaterialsLowRank"`
+	HRMat       [10]string `json:"MaterialsHighRank" bson:"MaterialsHighRank"`
+	GouRMat     [10]string `json:"MaterialsGouRank" bson:"MaterialsGouRank"`
+	GRMat       [10]string `json:"MaterialsGRank" bson:"MaterialsGRank"`
+	ZRMat       [10]string `json:"MaterialsZenithRank" bson:"MaterialsZenithRank"`
+	EncodedIcon string     `json:"Icon" bson:"Icon"`
+	EncodedPic  string     `json:"Pic" bson:"Pic"`
 }

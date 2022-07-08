@@ -24,94 +24,76 @@ import (
 
 func (w *win) MonsterUI(app fyne.App) {
 	w.window = app.NewWindow("Monster")
-	iconScreen(w.window)
 	id2 := 0 //passed to listupdate
-	//initIcons()
-
-	monsterpic := widget.NewIcon(theme.CancelIcon())
-	test := make([]string, 3)        //just a test array, it'll probably replaced by data retrieved from MongoDB later on
-	Monsterdata := make([]string, 3) //the  Monsterdata array used in list
-	test[0] = "Brachydios"
-	test[1] = "Rathalos"
-	test[2] = "Rathian"
+	//var id int
+	monsterpic := widget.NewIcon(theme.AccountIcon())
+	Monsters := decodemonsters()
 	materialButtons := container.NewHBox()
-
-	for i := range Monsterdata { //init with data from test array
-		Monsterdata[i] = strconv.Itoa(i+1) + " " + test[i]
-	}
-
+	//fmt.Println(Monsters[0].LRMat[0])
 	list := widget.NewList(
 		func() int {
-			return len(Monsterdata)
+			return len(Monsters)
 		},
 		func() fyne.CanvasObject {
-			return container.NewHBox(widget.NewLabel("Template Object"), widget.NewIcon(theme.DocumentIcon())) //creates a HBox for every row of the list
+			return container.NewHBox(widget.NewIcon(fyne.NewStaticResource("Monster", theme.AccountIcon().Content())), widget.NewLabel("Template Label")) //creates a HBox for every row of the list
 		},
-		func(id widget.ListItemID, item fyne.CanvasObject) {
-			item.(*fyne.Container).Objects[0].(*widget.Label).SetText(Monsterdata[id]) //assigns data to the box
+		func(id widget.ListItemID, obj fyne.CanvasObject) {
+			c := obj.(*fyne.Container)
+			c.Objects[0].(*widget.Icon).SetResource(fyne.NewStaticResource(Monsters[id].Name, Monsters[id].icon)) //assigns monster icon to list
+			c.Objects[1].(*widget.Label).SetText(Monsters[id].Name)                                               //assigns monster name to list
 		},
 	)
 
-	//icon := widget.NewIcon(nil)
-	//label := widget.NewLabel("Select An Item From The List")
-
-	var datat = [][]string{[]string{"Icon", "ItemName", "Quantity", "Price"},
-		[]string{"", "", "", ""}}
-
-	table := widget.NewTable( //empty Table, for which there will be data assigned to on ButtonClick
-		func() (int, int) {
-			return len(datat), len(datat[0])
+	matlist := widget.NewList(
+		func() int {
+			return len(Monsters[1].LRMat)
 		},
 		func() fyne.CanvasObject {
-			return container.NewHBox(widget.NewIcon(theme.DocumentIcon()), widget.NewLabel("wide content"))
+			return container.NewHBox(widget.NewIcon(fyne.NewStaticResource("Item", theme.AccountIcon().Content())), widget.NewLabel("Template Label")) //creates a HBox for every row of the list
 		},
-		func(id widget.TableCellID, item fyne.CanvasObject) {
-			item.(*fyne.Container).Objects[1].(*widget.Label).SetText(datat[id.Row][id.Col])
-		})
+		func(id widget.ListItemID, obj fyne.CanvasObject) {
+			c := obj.(*fyne.Container)
+			c.Objects[0].(*widget.Icon).SetResource(theme.AccountIcon()) //assigns monster icon to list
+			c.Objects[1].(*widget.Label).SetText("")                     //assigns monster name to list
+		},
+	)
 
 	LRButton := widget.NewButton("Low Rank", func() { //ex: assign low rank mats to table
-		table = w.materialsLR(app, *table)
-		w.listUpdate(app, id2, list, monsterpic, table, materialButtons)
+		matlist = w.materialsLR(app, Monsters[id2])
+		w.listUpdate(app, id2, list, monsterpic, matlist, materialButtons)
 	})
 
 	HRButton := widget.NewButton("High Rank", func() {
-		table = w.materialsHR(app, *table)
-		w.listUpdate(app, id2, list, monsterpic, table, materialButtons)
+		matlist = w.materialsHR(app, Monsters[id2])
+		w.listUpdate(app, id2, list, monsterpic, matlist, materialButtons)
 	})
 
 	GouRButton := widget.NewButton("Gou Rank", func() {
-		table = w.materialsGouR(app, *table)
-		w.listUpdate(app, id2, list, monsterpic, table, materialButtons)
+		matlist = w.materialsGouR(app, Monsters[id2])
+		w.listUpdate(app, id2, list, monsterpic, matlist, materialButtons)
 	})
 
 	GButton := widget.NewButton("G Rank", func() {
-		table = w.materialsG(app, *table)
-		w.listUpdate(app, id2, list, monsterpic, table, materialButtons)
+		matlist = w.materialsG(app, Monsters[id2])
+		w.listUpdate(app, id2, list, monsterpic, matlist, materialButtons)
 	})
 
 	ZenithButton := widget.NewButton("Zenith Rank", func() {
-		table = w.materialsZenith(app, *table)
-		w.listUpdate(app, id2, list, monsterpic, table, materialButtons)
+		matlist = w.materialsZenith(app, Monsters[id2])
+		w.listUpdate(app, id2, list, monsterpic, matlist, materialButtons)
 	})
 
-	//hbox := container.NewHBox(icon, label)
-	//buttons := w.monster_funcbuttons(app, list)
 	buttons := monster_addbutton(app)
-	//test := []string{"Brachydios", "Rathalos", "Rathian"}
 
 	gbox := container.New(layout.NewGridLayout(3), list, buttons) //list with no data displayed as long as theres no item selected
 
 	list.OnSelected = func(id widget.ListItemID) {
 		id2 = id
-		//label.SetText(Monsterdata[id])
-		//icon.SetResource(theme.DocumentIcon())
-
-		//assigns fyne.CanvasObject(HBOX) to variable buttons
+		monsterpic = widget.NewIcon(fyne.NewStaticResource("icon", Monsters[id].pic))
 		weakness := w.weakness(app, list) //assigns fyne.CanvasObject(GridWithColumns) to variable weakness
-		//weaknesswidget := container.New(layout.NewGridWrapLayout(fyne.NewSize(600, 600)), weakness) //add additional widgets with Wrap to adjust TextSize
-		//materials := w.materials(app)
+
 		materialButtons = container.NewHBox(LRButton, HRButton, GouRButton, GButton, ZenithButton)
-		materials := container.NewGridWithRows(2, materialButtons, table)
+		materials := container.NewGridWithRows(2, materialButtons, matlist)
 		gbox = container.New(layout.NewGridLayout(3), list, monsterpic, materials, buttons, weakness) //display gbox
 		w.window.SetContent(gbox)
 		w.window.Show()
@@ -119,8 +101,7 @@ func (w *win) MonsterUI(app fyne.App) {
 	}
 
 	list.OnUnselected = func(id widget.ListItemID) {
-		//label.SetText("Select An Item From The List")
-		//icon.SetResource(nil)
+
 		gbox = container.New(layout.NewGridLayout(3), list, buttons) //remove additional widgets
 		w.window.SetContent(gbox)                                    //display gbox
 		w.window.Show()
@@ -135,7 +116,22 @@ func (w *win) MonsterUI(app fyne.App) {
 
 func monster_addbutton(app fyne.App) fyne.CanvasObject {
 
-	//F[0] = widget.NewEntry().Text
+	for i := 0; i < 7; i++ {
+		tempmonster.Fire[i] = 99
+		tempmonster.Thunder[i] = 99
+		tempmonster.Water[i] = 99
+		tempmonster.Ice[i] = 99
+		tempmonster.Dragon[i] = 99
+
+	}
+	/*for i := 0; i < 10; i++ {
+		tempmonster.LRMat[i] = ""
+		tempmonster.HRMat[i] = "a"
+		tempmonster.GouRMat[i] = "a"
+		tempmonster.GRMat[i] = "a"
+		tempmonster.ZRMat[i] = "a"
+	}*/
+
 	add := widget.NewButton("Add", func() { //Button to Add Data
 		wInput := app.NewWindow("Add Data")
 
@@ -179,6 +175,62 @@ func monster_addbutton(app fyne.App) fyne.CanvasObject {
 		InputDragonBack := widget.NewEntry()
 		InputDragonTail := widget.NewEntry()
 		InputDragonLegs := widget.NewEntry()
+
+		//LRMat
+		InputLRMat0 := widget.NewEntry()
+		InputLRMat1 := widget.NewEntry()
+		InputLRMat2 := widget.NewEntry()
+		InputLRMat3 := widget.NewEntry()
+		InputLRMat4 := widget.NewEntry()
+		InputLRMat5 := widget.NewEntry()
+		InputLRMat6 := widget.NewEntry()
+		InputLRMat7 := widget.NewEntry()
+		InputLRMat8 := widget.NewEntry()
+		InputLRMat9 := widget.NewEntry()
+		//HRMat
+		InputHRMat0 := widget.NewEntry()
+		InputHRMat1 := widget.NewEntry()
+		InputHRMat2 := widget.NewEntry()
+		InputHRMat3 := widget.NewEntry()
+		InputHRMat4 := widget.NewEntry()
+		InputHRMat5 := widget.NewEntry()
+		InputHRMat6 := widget.NewEntry()
+		InputHRMat7 := widget.NewEntry()
+		InputHRMat8 := widget.NewEntry()
+		InputHRMat9 := widget.NewEntry()
+		//GouRMat
+		InputGouRMat0 := widget.NewEntry()
+		InputGouRMat1 := widget.NewEntry()
+		InputGouRMat2 := widget.NewEntry()
+		InputGouRMat3 := widget.NewEntry()
+		InputGouRMat4 := widget.NewEntry()
+		InputGouRMat5 := widget.NewEntry()
+		InputGouRMat6 := widget.NewEntry()
+		InputGouRMat7 := widget.NewEntry()
+		InputGouRMat8 := widget.NewEntry()
+		InputGouRMat9 := widget.NewEntry()
+		//GRMat
+		InputGRMat0 := widget.NewEntry()
+		InputGRMat1 := widget.NewEntry()
+		InputGRMat2 := widget.NewEntry()
+		InputGRMat3 := widget.NewEntry()
+		InputGRMat4 := widget.NewEntry()
+		InputGRMat5 := widget.NewEntry()
+		InputGRMat6 := widget.NewEntry()
+		InputGRMat7 := widget.NewEntry()
+		InputGRMat8 := widget.NewEntry()
+		InputGRMat9 := widget.NewEntry()
+		//ZRMat
+		InputZRMat0 := widget.NewEntry()
+		InputZRMat1 := widget.NewEntry()
+		InputZRMat2 := widget.NewEntry()
+		InputZRMat3 := widget.NewEntry()
+		InputZRMat4 := widget.NewEntry()
+		InputZRMat5 := widget.NewEntry()
+		InputZRMat6 := widget.NewEntry()
+		InputZRMat7 := widget.NewEntry()
+		InputZRMat8 := widget.NewEntry()
+		InputZRMat9 := widget.NewEntry()
 
 		MonsterName := widget.NewEntry()
 
@@ -244,21 +296,6 @@ func monster_addbutton(app fyne.App) fyne.CanvasObject {
 				InputDragonLegs),
 		)
 
-		/*NumberOfItemsEntryField := widget.NewEntry() //init with "0", crash otherwise, because value is nil on start of the window
-		Entries, err := strconv.Atoi("0")
-		if err != nil {
-			panic(err)
-		}
-		EntryButton := widget.NewButton("Set", func() { // this is the real data initialization
-			Entries, err = strconv.Atoi(NumberOfItemsEntryField.Text)
-			if err != nil {
-				panic(err)
-			}
-
-		})
-
-		EntryContainer := container.NewHBox(widget.NewLabel("Number of Entries: "), NumberOfItemsEntryField, EntryButton) //display everything Entry related in Box*/
-
 		inputmats := container.NewGridWithColumns(6,
 			container.NewGridWithRows(10,
 				widget.NewLabel("Rank:"),
@@ -274,65 +311,70 @@ func monster_addbutton(app fyne.App) fyne.CanvasObject {
 
 			container.NewGridWithRows(10,
 				widget.NewLabel("Low:"),
-				widget.NewEntry(),
-				widget.NewEntry(),
-				widget.NewEntry(),
-				widget.NewEntry(),
-				widget.NewEntry(),
-				widget.NewEntry(),
-				widget.NewEntry(),
-				widget.NewEntry(),
-				widget.NewEntry()),
+				InputLRMat0,
+				InputLRMat1,
+				InputLRMat2,
+				InputLRMat3,
+				InputLRMat4,
+				InputLRMat5,
+				InputLRMat6,
+				InputLRMat7,
+				InputLRMat8,
+				InputLRMat9),
 
 			container.NewGridWithRows(10,
 				widget.NewLabel("High:"),
-				widget.NewEntry(),
-				widget.NewEntry(),
-				widget.NewEntry(),
-				widget.NewEntry(),
-				widget.NewEntry(),
-				widget.NewEntry(),
-				widget.NewEntry(),
-				widget.NewEntry(),
-				widget.NewEntry()),
+				InputHRMat0,
+				InputHRMat1,
+				InputHRMat2,
+				InputHRMat3,
+				InputHRMat4,
+				InputHRMat5,
+				InputHRMat6,
+				InputHRMat7,
+				InputHRMat8,
+				InputHRMat9),
 
 			container.NewGridWithRows(10,
 				widget.NewLabel("Gou:"),
-				widget.NewEntry(),
-				widget.NewEntry(),
-				widget.NewEntry(),
-				widget.NewEntry(),
-				widget.NewEntry(),
-				widget.NewEntry(),
-				widget.NewEntry(),
-				widget.NewEntry(),
-				widget.NewEntry()),
+				InputGouRMat0,
+				InputGouRMat1,
+				InputGouRMat2,
+				InputGouRMat3,
+				InputGouRMat4,
+				InputGouRMat5,
+				InputGouRMat6,
+				InputGouRMat7,
+				InputGouRMat8,
+				InputGouRMat9),
 
 			container.NewGridWithRows(10,
 				widget.NewLabel("G:"),
-				widget.NewEntry(),
-				widget.NewEntry(),
-				widget.NewEntry(),
-				widget.NewEntry(),
-				widget.NewEntry(),
-				widget.NewEntry(),
-				widget.NewEntry(),
-				widget.NewEntry(),
-				widget.NewEntry()),
+				InputGRMat0,
+				InputGRMat1,
+				InputGRMat2,
+				InputGRMat3,
+				InputGRMat4,
+				InputGRMat5,
+				InputGRMat6,
+				InputGRMat7,
+				InputGRMat8,
+				InputGRMat9),
 
 			container.NewGridWithRows(10,
 				widget.NewLabel("Zenith:"),
-				widget.NewEntry(),
-				widget.NewEntry(),
-				widget.NewEntry(),
-				widget.NewEntry(),
-				widget.NewEntry(),
-				widget.NewEntry(),
-				widget.NewEntry(),
-				widget.NewEntry(),
-				widget.NewEntry()))
+				InputZRMat0,
+				InputZRMat1,
+				InputZRMat2,
+				InputZRMat3,
+				InputZRMat4,
+				InputZRMat5,
+				InputZRMat6,
+				InputZRMat7,
+				InputZRMat8,
+				InputZRMat9))
 
-		Selector := widget.NewButton("File Open With Filter (.jpg or .png)", func() {
+		monstericon := widget.NewButton("Choose Monster-Icon (.jpg or .png)", func() {
 			fd := dialog.NewFileOpen(func(reader fyne.URIReadCloser, err error) {
 				if err != nil {
 					dialog.ShowError(err, wInput)
@@ -343,14 +385,130 @@ func monster_addbutton(app fyne.App) fyne.CanvasObject {
 					return
 				}
 
-				imageOpened(reader)
+				imageOpenedMonsterIcon(reader)
+			}, wInput)
+			fd.SetFilter(storage.NewExtensionFileFilter([]string{".png", ".jpg", ".jpeg"}))
+			fd.Show()
+		})
+
+		monsterpic := widget.NewButton("Choose Monster-Pic... (.jpg or .png)", func() {
+			fd := dialog.NewFileOpen(func(reader fyne.URIReadCloser, err error) {
+				if err != nil {
+					dialog.ShowError(err, wInput)
+					return
+				}
+				if reader == nil {
+					log.Println("Cancelled")
+					return
+				}
+
+				imageOpenedMonsterPic(reader)
 			}, wInput)
 			fd.SetFilter(storage.NewExtensionFileFilter([]string{".png", ".jpg", ".jpeg"}))
 			fd.Show()
 		})
 
 		addData := widget.NewButton("Add", func() { //Button to add into MonsterName typed Data
+			tempmonster.Name = MonsterName.Text
 
+			/*Get Element-Weaknesses*/
+			//Get Fire-Values
+			tempmonster.Fire[0], _ = strconv.Atoi(InputFireHead.Text)
+			tempmonster.Fire[1], _ = strconv.Atoi(InputFireWings.Text)
+			tempmonster.Fire[2], _ = strconv.Atoi(InputFireWingTailTip.Text)
+			tempmonster.Fire[3], _ = strconv.Atoi(InputFireBelly.Text)
+			tempmonster.Fire[4], _ = strconv.Atoi(InputFireBack.Text)
+			tempmonster.Fire[5], _ = strconv.Atoi(InputFireTail.Text)
+			tempmonster.Fire[6], _ = strconv.Atoi(InputFireLegs.Text)
+			//Get Thunder-Values
+			tempmonster.Thunder[0], _ = strconv.Atoi(InputThunderHead.Text)
+			tempmonster.Thunder[1], _ = strconv.Atoi(InputThunderWings.Text)
+			tempmonster.Thunder[2], _ = strconv.Atoi(InputThunderWingTailTip.Text)
+			tempmonster.Thunder[3], _ = strconv.Atoi(InputThunderBelly.Text)
+			tempmonster.Thunder[4], _ = strconv.Atoi(InputThunderBack.Text)
+			tempmonster.Thunder[5], _ = strconv.Atoi(InputThunderTail.Text)
+			tempmonster.Thunder[6], _ = strconv.Atoi(InputThunderLegs.Text)
+			//Get Water-Values
+			tempmonster.Water[0], _ = strconv.Atoi(InputWaterHead.Text)
+			tempmonster.Water[1], _ = strconv.Atoi(InputWaterWings.Text)
+			tempmonster.Water[2], _ = strconv.Atoi(InputWaterWingTailTip.Text)
+			tempmonster.Water[3], _ = strconv.Atoi(InputWaterBelly.Text)
+			tempmonster.Water[4], _ = strconv.Atoi(InputWaterBack.Text)
+			tempmonster.Water[5], _ = strconv.Atoi(InputWaterTail.Text)
+			tempmonster.Water[6], _ = strconv.Atoi(InputWaterLegs.Text)
+			//Get Ice-Values
+			tempmonster.Ice[0], _ = strconv.Atoi(InputIceHead.Text)
+			tempmonster.Ice[1], _ = strconv.Atoi(InputIceWings.Text)
+			tempmonster.Ice[2], _ = strconv.Atoi(InputIceWingTailTip.Text)
+			tempmonster.Ice[3], _ = strconv.Atoi(InputIceBelly.Text)
+			tempmonster.Ice[4], _ = strconv.Atoi(InputIceBack.Text)
+			tempmonster.Ice[5], _ = strconv.Atoi(InputIceTail.Text)
+			tempmonster.Ice[6], _ = strconv.Atoi(InputIceLegs.Text)
+			//Get Dragon-Values
+			tempmonster.Dragon[0], _ = strconv.Atoi(InputDragonHead.Text)
+			tempmonster.Dragon[1], _ = strconv.Atoi(InputDragonWings.Text)
+			tempmonster.Dragon[2], _ = strconv.Atoi(InputDragonWingTailTip.Text)
+			tempmonster.Dragon[3], _ = strconv.Atoi(InputDragonBelly.Text)
+			tempmonster.Dragon[4], _ = strconv.Atoi(InputDragonBack.Text)
+			tempmonster.Dragon[5], _ = strconv.Atoi(InputDragonTail.Text)
+			tempmonster.Dragon[6], _ = strconv.Atoi(InputDragonLegs.Text)
+
+			/*Get Materials*/
+			//Low Rank Mats
+			tempmonster.LRMat[0] = InputLRMat0.Text
+			tempmonster.LRMat[2] = InputLRMat2.Text
+			tempmonster.LRMat[3] = InputLRMat3.Text
+			tempmonster.LRMat[4] = InputLRMat4.Text
+			tempmonster.LRMat[5] = InputLRMat5.Text
+			tempmonster.LRMat[6] = InputLRMat6.Text
+			tempmonster.LRMat[7] = InputLRMat7.Text
+			tempmonster.LRMat[8] = InputLRMat8.Text
+			tempmonster.LRMat[9] = InputLRMat9.Text
+			//High Rank Mats
+			tempmonster.HRMat[0] = InputHRMat0.Text
+			tempmonster.HRMat[1] = InputHRMat1.Text
+			tempmonster.HRMat[2] = InputHRMat2.Text
+			tempmonster.HRMat[3] = InputHRMat3.Text
+			tempmonster.HRMat[4] = InputHRMat4.Text
+			tempmonster.HRMat[5] = InputHRMat5.Text
+			tempmonster.HRMat[6] = InputHRMat6.Text
+			tempmonster.HRMat[7] = InputHRMat7.Text
+			tempmonster.HRMat[8] = InputHRMat8.Text
+			tempmonster.HRMat[9] = InputHRMat9.Text
+			//Gou Rank Mats
+			tempmonster.GouRMat[0] = InputGouRMat0.Text
+			tempmonster.GouRMat[1] = InputGouRMat1.Text
+			tempmonster.GouRMat[2] = InputGouRMat2.Text
+			tempmonster.GouRMat[3] = InputGouRMat3.Text
+			tempmonster.GouRMat[4] = InputGouRMat4.Text
+			tempmonster.GouRMat[5] = InputGouRMat5.Text
+			tempmonster.GouRMat[6] = InputGouRMat6.Text
+			tempmonster.GouRMat[7] = InputGouRMat7.Text
+			tempmonster.GouRMat[8] = InputGouRMat8.Text
+			tempmonster.GouRMat[9] = InputGouRMat9.Text
+			//G Rank Mats
+			tempmonster.GRMat[0] = InputGRMat0.Text
+			tempmonster.GRMat[1] = InputGRMat1.Text
+			tempmonster.GRMat[2] = InputGRMat2.Text
+			tempmonster.GRMat[3] = InputGRMat3.Text
+			tempmonster.GRMat[4] = InputGRMat4.Text
+			tempmonster.GRMat[5] = InputGRMat5.Text
+			tempmonster.GRMat[6] = InputGRMat6.Text
+			tempmonster.GRMat[7] = InputGRMat7.Text
+			tempmonster.GRMat[8] = InputGRMat8.Text
+			tempmonster.GRMat[9] = InputGRMat9.Text
+			//Z Rank Mats
+			tempmonster.ZRMat[0] = InputZRMat0.Text
+			tempmonster.ZRMat[1] = InputZRMat1.Text
+			tempmonster.ZRMat[2] = InputZRMat2.Text
+			tempmonster.ZRMat[3] = InputZRMat3.Text
+			tempmonster.ZRMat[4] = InputZRMat4.Text
+			tempmonster.ZRMat[5] = InputZRMat5.Text
+			tempmonster.ZRMat[6] = InputZRMat6.Text
+			tempmonster.ZRMat[7] = InputZRMat7.Text
+			tempmonster.ZRMat[8] = InputZRMat8.Text
+			tempmonster.ZRMat[9] = InputZRMat9.Text
+			InsertOneMonster(client, ctx)
 			wInput.Close()
 		})
 
@@ -359,7 +517,7 @@ func monster_addbutton(app fyne.App) fyne.CanvasObject {
 
 		})
 
-		wInput.SetContent(container.New(layout.NewVBoxLayout(), MonsterName, Selector, Weaknesses, inputmats, addData, cancel)) //Layout for the "Insertion-Window"
+		wInput.SetContent(container.New(layout.NewVBoxLayout(), MonsterName, monstericon, monsterpic, Weaknesses, inputmats, addData, cancel)) //Layout for the "Insertion-Window"
 		wInput.Resize(fyne.NewSize(400, 200))
 		wInput.CenterOnScreen()
 		wInput.Show()
@@ -393,131 +551,111 @@ func (w *win) weakness(app fyne.App, li *widget.List) fyne.CanvasObject {
 	return table
 }
 
-func (w *win) materialsLR(app fyne.App, tr widget.Table) *widget.Table {
+func (w *win) materialsLR(app fyne.App, Monster MonsterStruct) *widget.List {
 
-	var data = [][]string{[]string{"Icon", "ItemName", "Quantity", "Price"}, //ex : inits LR mat data
-		[]string{"", "Dummy LR", "1x", "100z"}}
-
-	table := widget.NewTable(
-		func() (int, int) {
-			return len(data), len(data[0])
+	matlist := widget.NewList(
+		func() int {
+			return len(Monster.LRMat)
 		},
 		func() fyne.CanvasObject {
-			return container.NewHBox(widget.NewIcon(theme.DocumentIcon()), widget.NewLabel("wide content"))
+			return container.NewHBox(widget.NewIcon(fyne.NewStaticResource("Monster", theme.AccountIcon().Content())), widget.NewLabel("Template Label")) //creates a HBox for every row of the list
 		},
-		func(id widget.TableCellID, item fyne.CanvasObject) {
-			item.(*fyne.Container).Objects[1].(*widget.Label).SetText(data[id.Row][id.Col])
-		})
+		func(id widget.ListItemID, obj fyne.CanvasObject) {
+			c := obj.(*fyne.Container)
+			c.Objects[0].(*widget.Icon).SetResource(fyne.NewStaticResource(Monster.Name, Monster.icon)) //assigns monster icon to list
+			c.Objects[1].(*widget.Label).SetText(Monster.LRMat[id])                                     //assigns monster name to list
+		},
+	)
 
-	return table
+	return matlist
 
 }
 
-func (w *win) materialsHR(app fyne.App, tr widget.Table) *widget.Table {
+func (w *win) materialsHR(app fyne.App, Monster MonsterStruct) *widget.List {
 
-	var data = [][]string{[]string{"Icon", "ItemName", "Quantity", "Price"},
-		[]string{"", "Dummy HR", "1x", "100z"}}
-
-	table := widget.NewTable(
-		func() (int, int) {
-			return len(data), len(data[0])
+	matlist := widget.NewList(
+		func() int {
+			return len(Monster.HRMat)
 		},
 		func() fyne.CanvasObject {
-			return container.NewHBox(widget.NewIcon(theme.DocumentIcon()), widget.NewLabel("wide content"))
+			return container.NewHBox(widget.NewIcon(fyne.NewStaticResource("Monster", theme.AccountIcon().Content())), widget.NewLabel("Template Label")) //creates a HBox for every row of the list
 		},
-		func(id widget.TableCellID, item fyne.CanvasObject) {
-			item.(*fyne.Container).Objects[1].(*widget.Label).SetText(data[id.Row][id.Col])
-		})
+		func(id widget.ListItemID, obj fyne.CanvasObject) {
+			c := obj.(*fyne.Container)
+			c.Objects[0].(*widget.Icon).SetResource(fyne.NewStaticResource(Monster.Name, Monster.icon)) //assigns monster icon to list
+			c.Objects[1].(*widget.Label).SetText(Monster.HRMat[id])                                     //assigns monster name to list
+		},
+	)
 
-	return table
+	return matlist
 
 }
 
-func (w *win) materialsGouR(app fyne.App, tr widget.Table) *widget.Table {
+func (w *win) materialsGouR(app fyne.App, Monster MonsterStruct) *widget.List {
 
-	var data = [][]string{[]string{"Icon", "ItemName", "Quantity", "Price"},
-		[]string{"", "Dummy Gou", "1x", "100z"}}
-
-	table := widget.NewTable(
-		func() (int, int) {
-			return len(data), len(data[0])
+	matlist := widget.NewList(
+		func() int {
+			return len(Monster.GouRMat)
 		},
 		func() fyne.CanvasObject {
-			return container.NewHBox(widget.NewIcon(theme.DocumentIcon()), widget.NewLabel("wide content"))
+			return container.NewHBox(widget.NewIcon(fyne.NewStaticResource("Monster", theme.AccountIcon().Content())), widget.NewLabel("Template Label")) //creates a HBox for every row of the list
 		},
-		func(id widget.TableCellID, item fyne.CanvasObject) {
-			item.(*fyne.Container).Objects[1].(*widget.Label).SetText(data[id.Row][id.Col])
-		})
+		func(id widget.ListItemID, obj fyne.CanvasObject) {
+			c := obj.(*fyne.Container)
+			c.Objects[0].(*widget.Icon).SetResource(fyne.NewStaticResource(Monster.Name, Monster.icon)) //assigns monster icon to list
+			c.Objects[1].(*widget.Label).SetText(Monster.GouRMat[id])                                   //assigns monster name to list
+		},
+	)
 
-	return table
+	return matlist
 
 }
 
-func (w *win) materialsG(app fyne.App, tr widget.Table) *widget.Table {
+func (w *win) materialsG(app fyne.App, Monster MonsterStruct) *widget.List {
 
-	var data = [][]string{[]string{"Icon", "ItemName", "Quantity", "Price"},
-		[]string{"", "Dummy G", "1x", "100z"}}
-
-	table := widget.NewTable(
-		func() (int, int) {
-			return len(data), len(data[0])
+	matlist := widget.NewList(
+		func() int {
+			return len(Monster.ZRMat)
 		},
 		func() fyne.CanvasObject {
-			return container.NewHBox(widget.NewIcon(theme.DocumentIcon()), widget.NewLabel("wide content"))
+			return container.NewHBox(widget.NewIcon(fyne.NewStaticResource("Monster", theme.AccountIcon().Content())), widget.NewLabel("Template Label")) //creates a HBox for every row of the list
 		},
-		func(id widget.TableCellID, item fyne.CanvasObject) {
-			item.(*fyne.Container).Objects[1].(*widget.Label).SetText(data[id.Row][id.Col])
-		})
+		func(id widget.ListItemID, obj fyne.CanvasObject) {
+			c := obj.(*fyne.Container)
+			c.Objects[0].(*widget.Icon).SetResource(fyne.NewStaticResource(Monster.Name, Monster.icon)) //assigns monster icon to list
+			c.Objects[1].(*widget.Label).SetText(Monster.ZRMat[id])                                     //assigns monster name to list
+		},
+	)
 
-	return table
+	return matlist
 
 }
 
-func (w *win) materialsZenith(app fyne.App, tr widget.Table) *widget.Table {
+func (w *win) materialsZenith(app fyne.App, Monster MonsterStruct) *widget.List {
 
-	var data = [][]string{[]string{"Icon", "ItemName", "Quantity", "Price"},
-		[]string{"", "Dummy Zenith", "1x", "100z"}}
-
-	table := widget.NewTable(
-		func() (int, int) {
-			return len(data), len(data[0])
+	matlist := widget.NewList(
+		func() int {
+			return len(Monster.GRMat)
 		},
 		func() fyne.CanvasObject {
-			return container.NewHBox(widget.NewIcon(theme.DocumentIcon()), widget.NewLabel("wide content"))
+			return container.NewHBox(widget.NewIcon(fyne.NewStaticResource("Monster", theme.AccountIcon().Content())), widget.NewLabel("Template Label")) //creates a HBox for every row of the list
 		},
-		func(id widget.TableCellID, item fyne.CanvasObject) {
-			item.(*fyne.Container).Objects[1].(*widget.Label).SetText(data[id.Row][id.Col])
-		})
-
-	return table
-
-}
-
-func (w *win) materialsMusou(app fyne.App, tr widget.Table) *widget.Table {
-
-	var data = [][]string{[]string{"Icon", "ItemName", "Quantity", "Price"},
-		[]string{"", "Dummy Musou", "1x", "100z"}}
-
-	table := widget.NewTable(
-		func() (int, int) {
-			return len(data), len(data[0])
+		func(id widget.ListItemID, obj fyne.CanvasObject) {
+			c := obj.(*fyne.Container)
+			c.Objects[0].(*widget.Icon).SetResource(fyne.NewStaticResource(Monster.Name, Monster.icon)) //assigns monster icon to list
+			c.Objects[1].(*widget.Label).SetText(Monster.GRMat[id])                                     //assigns monster name to list
 		},
-		func() fyne.CanvasObject {
-			return container.NewHBox(widget.NewIcon(theme.DocumentIcon()), widget.NewLabel("wide content"))
-		},
-		func(id widget.TableCellID, item fyne.CanvasObject) {
-			item.(*fyne.Container).Objects[1].(*widget.Label).SetText(data[id.Row][id.Col])
-		})
+	)
 
-	return table
+	return matlist
 
 }
 
 func (w *win) listUpdate(app fyne.App, id widget.ListItemID, list *widget.List, monsterpic fyne.CanvasObject,
-	table *widget.Table, materialButtons fyne.CanvasObject) { //function updates materials when another Rank was selected
+	matlist *widget.List, materialButtons fyne.CanvasObject) { //function updates materials when another Rank was selected
 	buttons := monster_addbutton(app)
 	weakness := w.weakness(app, list)
-	materials := container.NewGridWithRows(2, materialButtons, table)
+	materials := container.NewGridWithRows(2, materialButtons, matlist)
 	gbox := container.New(layout.NewGridLayout(3), list, monsterpic, materials, buttons, weakness)
 
 	w.window.SetContent(gbox)
