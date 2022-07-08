@@ -149,3 +149,29 @@ func DeleteOne(client *mongo.Client, ctx context.Context, Item ItemStruct) {
 	}
 	fmt.Printf("Deleted  %v Documents!\n", result.DeletedCount)
 }
+
+//Weapons
+func ReadAllWeapons(client *mongo.Client, ctx context.Context) ([]WeaponStruct, error) {
+	coll := client.Database("Frontier").Collection("Weapons")
+
+	var results []WeaponStruct
+	cursor, err := coll.Find(ctx, bson.D{{}})
+	if err != nil {
+		log.Fatal(err)
+	}
+	defer cursor.Close(ctx)
+	for cursor.Next(ctx) {
+		var result WeaponStruct
+		err := cursor.Decode(&result)
+		if err != nil {
+			log.Fatal(err)
+		}
+		results = append(results, result)
+	}
+
+	if err := cursor.Err(); err != nil {
+		log.Fatal(err)
+	}
+
+	return results, err
+}

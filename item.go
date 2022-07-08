@@ -24,7 +24,7 @@ import (
 func (w *win) ItemUI(app fyne.App) {
 	w.window = app.NewWindow("Item")
 
-	Items := decode()
+	Items := decodeitems()
 
 	itembuttons := w.item_addbutton(app)
 
@@ -147,7 +147,7 @@ func (w *win) item_addbutton(app fyne.App) fyne.CanvasObject {
 	return container.NewVBox(add)
 }
 
-func decode() []ItemStruct {
+func decodeitems() []ItemStruct {
 	Items, err := ReadAllItems(client, ctx)
 	if err != nil {
 		panic(err)
@@ -194,7 +194,7 @@ func decode() []ItemStruct {
 }
 
 func (w *win) listUpdateItem(app fyne.App) { //function updates materials when another Rank was selected
-	Items := decode()
+	Items := decodeitems()
 	itembuttons := w.item_addbutton(app)
 
 	icon := widget.NewIcon(fyne.NewStaticResource("icon", Items[1].iconb))

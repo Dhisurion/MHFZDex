@@ -44,6 +44,23 @@ type ItemStruct struct {
 	Encoded string             `json:"Icon" bson:"Icon"`
 }
 
+type WeaponStruct struct {
+	iconb        []byte
+	ID           primitive.ObjectID `bson:"_id,omitempty"`
+	Name         string             `json:"Name" bson:"Name"`
+	Kind         string             `json:"Kind" bson:"Kind"`
+	Rarity       int                `json:"Rarity" bson:"Rarity"`
+	Attack       int                `json:"Attack" bson:"Attack"`
+	Element      string             `json:"Element" bson:"Element"`
+	Elementvalue int                `json:"Elementvalue" bson:"Elementvalue"`
+	Sharpness    string             `json:"Sharpness" bson:"Sharpness"`
+	Affinity     int                `json:"Affinity" bson:"Affinity"`
+	Defense      int                `json:"Defense" bson:"Defense"`
+	Price        int                `json:"Price" bson:"Price"`
+	Material     string             `json:"Material" bson:"Material"`
+	Quantity     int                `json:"Quantity" bson:"Quantity"`
+	Encoded      string             `json:"Icon" bson:"Icon"`
+}
 type TempMonsterStruct struct {
 	Name    string   `json:"Name" bson:"Name"`
 	Fire    [6]int   `json:"Fire" bson:"Fire"`
@@ -66,4 +83,20 @@ type TempItemStruct struct {
 	Sell    int    `json:"Sell" bson:"Sell"`
 	Buy     int    `json:"Buy" bson:"Buy"`
 	Encoded string `json:"Icon" bson:"Icon"`
+}
+
+type TempWeaponStruct struct {
+	Name         string `json:"Name" bson:"Name"`
+	Kind         string `json:"Kind" bson:"Kind"` //weapontype but type is a bad declaration
+	Rarity       int    `json:"Rarity" bson:"Rarity"`
+	Attack       int    `json:"Attack" bson:"Attack"`
+	Element      string `json:"Element" bson:"Element"`
+	Elementvalue int    `json:"Elementvalue" bson:"Elementvalue"`
+	Sharpness    string `json:"Sharpness" bson:"Sharpness"`
+	Affinity     int    `json:"Affinity" bson:"Affinity"`
+	Defense      int    `json:"Defense" bson:"Defense"`
+	Price        int    `json:"Price" bson:"Price"`
+	Material     string `json:"Material" bson:"Material"`
+	Quantity     int    `json:"Quantity" bson:"Quantity"`
+	Encoded      string `json:"Icon" bson:"Icon"`
 }

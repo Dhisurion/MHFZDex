@@ -17,8 +17,10 @@ import (
 
 var monster MonsterStruct
 var item ItemStruct
+var weapon WeaponStruct
 var tempmonster TempMonsterStruct
 var tempitem TempItemStruct
+var tempweapon TempWeaponStruct
 
 //var Monster[] MonsterStruct
 
