@@ -26,28 +26,30 @@ func imageOpenedItemIcon(f fyne.URIReadCloser) {
 }
 
 //Monster Dialog
-func imageOpenedMonsterIcon(f fyne.URIReadCloser) {
+func imageOpenedMonsterIcon(f fyne.URIReadCloser, tempmonster TempMonsterStruct) string {
 	if f == nil {
 		log.Println("Cancelled")
-		return
+		return ""
 	}
 	defer f.Close()
 
 	selectedMonstericon = loadImage(f)
 	tempmonster.EncodedIcon = base64.StdEncoding.EncodeToString([]byte(selectedMonstericon.Resource.Content()))
 
+	return tempmonster.EncodedIcon
+
 }
 
-func imageOpenedMonsterPic(f fyne.URIReadCloser) {
+func imageOpenedMonsterPic(f fyne.URIReadCloser, tempmonster TempMonsterStruct) string {
 	if f == nil {
 		log.Println("Cancelled")
-		return
+		return ""
 	}
 	defer f.Close()
 
 	selectedMonsterPic = loadImage(f)
 	tempmonster.EncodedPic = base64.StdEncoding.EncodeToString([]byte(selectedMonsterPic.Resource.Content()))
-
+	return tempmonster.EncodedPic
 }
 
 //Weapon Dialog

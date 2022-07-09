@@ -178,7 +178,7 @@ func ReadAllWeapons(client *mongo.Client, ctx context.Context) ([]WeaponStruct, 
 
 //Monsters
 
-func InsertOneMonster(client *mongo.Client, ctx context.Context) error {
+func InsertOneMonster(client *mongo.Client, ctx context.Context, tempmonster TempMonsterStruct) error {
 	coll := client.Database("Frontier").Collection("Monsters")
 	doc := bson.D{{"Name", tempmonster.Name}, {"Icon", tempmonster.EncodedIcon}, {"Pic", tempmonster.EncodedPic},
 		{"FireWeakness", tempmonster.Fire}, {"ThunderWeakness", tempmonster.Thunder}, {"WaterWeakness", tempmonster.Water},
@@ -218,7 +218,7 @@ func ReadAllMonsters(client *mongo.Client, ctx context.Context) ([]MonsterStruct
 	return results, err
 }
 
-func UpdateOneMonster(client *mongo.Client, ctx context.Context, Monster MonsterStruct) {
+func UpdateOneMonster(client *mongo.Client, ctx context.Context, Monster MonsterStruct, tempmonster TempMonsterStruct) {
 	coll := client.Database("Frontier").Collection("Monsters")
 
 	result, err := coll.UpdateOne(ctx,
