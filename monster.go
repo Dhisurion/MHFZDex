@@ -24,61 +24,34 @@ import (
 
 func (w *win) MonsterUI(app fyne.App) {
 	w.window = app.NewWindow("Monster")
-	id2 := 0 //passed to listupdate
-	var id widget.ListItemID
+	//id2 := 0 //passed to listupdate
+	var id int
 	monsterpic := widget.NewIcon(theme.AccountIcon())
 	Monsters := decodemonsters()
-	materialButtons := container.NewHBox()
+
+	//materialButtons := container.NewHBox()
 	//fmt.Println(Monsters[0].LRMat[0])
 
 	list, id := initlist(Monsters, id)
 	matlist := initmatlist()
 
-	LRButton := widget.NewButton("Low Rank", func() { //ex: assign low rank mats to table
-		matlist = w.materialsLR(app, Monsters[id2])
-		//matlist.Refresh()
-		w.listUpdate(app, id2, list, monsterpic, matlist, materialButtons, Monsters[id])
-	})
+	//materialButtons := w.initmaterialbuttons(app, id, matlist, Monsters)
 
-	HRButton := widget.NewButton("High Rank", func() {
-		matlist = w.materialsHR(app, Monsters[id2])
-
-		w.listUpdate(app, id2, list, monsterpic, matlist, materialButtons, Monsters[id])
-	})
-
-	GouRButton := widget.NewButton("Gou Rank", func() {
-		matlist = w.materialsGouR(app, Monsters[id2])
-		matlist.Refresh()
-		w.listUpdate(app, id2, list, monsterpic, matlist, materialButtons, Monsters[id])
-	})
-
-	GButton := widget.NewButton("G Rank", func() {
-		matlist = w.materialsG(app, Monsters[id2])
-		matlist.Refresh()
-		w.listUpdate(app, id2, list, monsterpic, matlist, materialButtons, Monsters[id])
-	})
-
-	ZenithButton := widget.NewButton("Zenith Rank", func() {
-		matlist = w.materialsZenith(app, Monsters[id2])
-		matlist.Refresh()
-		w.listUpdate(app, id2, list, monsterpic, matlist, materialButtons, Monsters[id])
-	})
-
-	addbutton := w.monster_addbutton(app, id, list, matlist, materialButtons, Monsters[id])
+	addbutton := w.monster_addbutton(app, id, matlist)
 	buttons := container.NewVBox(addbutton)
 
 	gbox := container.New(layout.NewGridLayout(3), list, buttons) //list with no data displayed as long as theres no item selected
 
 	list.OnSelected = func(id widget.ListItemID) {
-		id2 = id
-		updatebutton := w.monster_updatebutton(app, Monsters[id])
-		deletebutton := w.monster_deletebutton(app, Monsters[id])
+		//id2 = id
+		updatebutton := w.monster_updatebutton(app, id, matlist, Monsters[id])
+		deletebutton := w.monster_deletebutton(app, id, matlist, Monsters[id])
 
 		buttons = container.NewVBox(addbutton, updatebutton, deletebutton)
 		monsterpic = widget.NewIcon(fyne.NewStaticResource("icon", Monsters[id].pic))
 		weakness := w.weakness(app, list, Monsters[id]) //assigns fyne.CanvasObject(GridWithColumns) to variable weakness
 		matlist := initmatlist()
-		materialButtons = container.NewHBox(LRButton, HRButton, GouRButton, GButton, ZenithButton)
+		materialButtons := w.initmaterialbuttons(app, id, matlist, Monsters)
 		materials := container.NewGridWithRows(2, materialButtons, matlist)
 		gbox = container.New(layout.NewGridLayout(3), list, monsterpic, materials, buttons, weakness) //display gbox
 		w.window.SetContent(gbox)
@@ -100,7 +73,7 @@ func (w *win) MonsterUI(app fyne.App) {
 
 }
 
-func (w *win) monster_addbutton(app fyne.App, id int, list *widget.List, matlist *widget.List, materialButtons fyne.CanvasObject, Monster MonsterStruct) fyne.CanvasObject {
+func (w *win) monster_addbutton(app fyne.App, id int, matlist *widget.List) fyne.CanvasObject {
 	var tempmonster TempMonsterStruct
 	for i := 0; i < 7; i++ {
 		tempmonster.Fire[i] = 99
@@ -497,7 +470,7 @@ func (w *win) monster_addbutton(app fyne.App, id int, list *widget.List, matlist
 			tempmonster.ZRMat[8] = InputZRMat8.Text
 			tempmonster.ZRMat[9] = InputZRMat9.Text
 			InsertOneMonster(client, ctx, tempmonster)
-			w.listUpdate(app, id, list, monsterpic, matlist, materialButtons, Monster)
+			w.listUpdate(app, id, matlist)
 			wInput.Close()
 		})
 
@@ -640,18 +613,37 @@ func (w *win) materialsZenith(app fyne.App, Monster MonsterStruct) *widget.List 
 
 }
 
-func (w *win) listUpdate(app fyne.App, id widget.ListItemID, list *widget.List, monsterpic fyne.CanvasObject,
-	matlist *widget.List, materialButtons fyne.CanvasObject, Monster MonsterStruct) { //function updates materials when another Rank was selected
+func (w *win) listUpdate(app fyne.App, id widget.ListItemID,
+	matlist *widget.List) { //function updates materials when another Rank was selected
 	Monsters := decodemonsters()
-	list, id = initlist(Monsters, id)
-	addbutton := w.monster_addbutton(app, id, list, matlist, materialButtons, Monster)
-	updatebutton := w.monster_updatebutton(app, Monster)
-	deletebutton := w.monster_deletebutton(app, Monster)
-	monsterpic = widget.NewIcon(fyne.NewStaticResource("icon", Monsters[id].pic))
+	list, id := initlist(Monsters, id)
+	materialButtons := w.initmaterialbuttons(app, id, matlist, Monsters)
+	addbutton := w.monster_addbutton(app, id, matlist)
+	updatebutton := w.monster_updatebutton(app, id, matlist, Monsters[id])
+	deletebutton := w.monster_deletebutton(app, id, matlist, Monsters[id])
+
+	monsterpic := widget.NewIcon(fyne.NewStaticResource("icon", Monsters[id].pic))
 	buttons := container.NewVBox(addbutton, updatebutton, deletebutton)
-	weakness := w.weakness(app, list, Monster)
+	weakness := w.weakness(app, list, Monsters[id])
 	materials := container.NewGridWithRows(2, materialButtons, matlist)
 	gbox := container.New(layout.NewGridLayout(3), list, monsterpic, materials, buttons, weakness)
+
+	list.OnSelected = func(id widget.ListItemID) {
+		//id2 = id
+		updatebutton := w.monster_updatebutton(app, id, matlist, Monsters[id])
+		deletebutton := w.monster_deletebutton(app, id, matlist, Monsters[id])
+
+		buttons = container.NewVBox(addbutton, updatebutton, deletebutton)
+		monsterpic = widget.NewIcon(fyne.NewStaticResource("icon", Monsters[id].pic))
+		weakness := w.weakness(app, list, Monsters[id]) //assigns fyne.CanvasObject(GridWithColumns) to variable weakness
+		matlist := initmatlist()
+		materialButtons := w.initmaterialbuttons(app, id, matlist, Monsters)
+		materials := container.NewGridWithRows(2, materialButtons, matlist)
+		gbox = container.New(layout.NewGridLayout(3), list, monsterpic, materials, buttons, weakness) //display gbox
+		w.window.SetContent(gbox)
+		w.window.Show()
+
+	}
 
 	w.window.SetContent(gbox)
 	w.window.Show()
@@ -694,7 +686,7 @@ func initlist(Monsters []MonsterStruct, id widget.ListItemID) (*widget.List, wid
 	return list, id
 }
 
-func (w *win) monster_updatebutton(app fyne.App, Monster MonsterStruct) fyne.CanvasObject {
+func (w *win) monster_updatebutton(app fyne.App, id int, matlist *widget.List, Monster MonsterStruct) fyne.CanvasObject {
 	var tempmonster TempMonsterStruct
 	for i := 0; i < 7; i++ {
 		tempmonster.Fire[i] = 99
@@ -1089,7 +1081,7 @@ func (w *win) monster_updatebutton(app fyne.App, Monster MonsterStruct) fyne.Can
 			tempmonster.ZRMat[8] = InputZRMat8.Text
 			tempmonster.ZRMat[9] = InputZRMat9.Text
 			UpdateOneMonster(client, ctx, Monster, tempmonster)
-
+			w.listUpdate(app, id, matlist)
 			wInput.Close()
 		})
 
@@ -1107,10 +1099,73 @@ func (w *win) monster_updatebutton(app fyne.App, Monster MonsterStruct) fyne.Can
 	return container.NewVBox(update)
 }
 
-func (w *win) monster_deletebutton(app fyne.App, Monster MonsterStruct) fyne.CanvasObject {
+func (w *win) monster_deletebutton(app fyne.App, id int, matlist *widget.List, Monster MonsterStruct) fyne.CanvasObject {
 	delete := widget.NewButton("Delete", func() { //Button to Delete Items
 		DeleteOneMonster(client, ctx, Monster)
-
+		id = id - 1
+		if id >= 0 {
+			w.listUpdate(app, id, matlist)
+		}
+		if id < 0 {
+			w.initemptylist(app, id, matlist)
+		}
 	})
+
 	return container.NewVBox(delete)
+}
+
+func (w *win) initmaterialbuttons(app fyne.App, id int, matlist *widget.List, Monsters []MonsterStruct) fyne.CanvasObject {
+	LRButton := widget.NewButton("Low Rank", func() { //ex: assign low rank mats to table
+		matlist = w.materialsLR(app, Monsters[id])
+		//matlist.Refresh()
+		w.listUpdate(app, id, matlist)
+	})
+
+	HRButton := widget.NewButton("High Rank", func() {
+		matlist = w.materialsHR(app, Monsters[id])
+
+		w.listUpdate(app, id, matlist)
+	})
+
+	GouRButton := widget.NewButton("Gou Rank", func() {
+		matlist = w.materialsGouR(app, Monsters[id])
+		matlist.Refresh()
+		w.listUpdate(app, id, matlist)
+	})
+
+	GRButton := widget.NewButton("G Rank", func() {
+		matlist = w.materialsG(app, Monsters[id])
+		matlist.Refresh()
+		w.listUpdate(app, id, matlist)
+	})
+
+	ZenithButton := widget.NewButton("Zenith Rank", func() {
+		matlist = w.materialsZenith(app, Monsters[id])
+		matlist.Refresh()
+		w.listUpdate(app, id, matlist)
+	})
+
+	materialbuttons := container.NewHBox(LRButton, HRButton, GouRButton, GRButton, ZenithButton)
+
+	return materialbuttons
+}
+
+func (w *win) initemptylist(app fyne.App, id int, matlist *widget.List) {
+	id = 0
+	list := widget.NewList(
+		func() int {
+			return 0
+		},
+		func() fyne.CanvasObject {
+			return container.NewHBox(widget.NewLabel("Template Label")) //creates a HBox for every row of the list
+		},
+		func(id widget.ListItemID, obj fyne.CanvasObject) {
+			c := obj.(*fyne.Container)
+			c.Objects[0].(*widget.Label).SetText("")
+		},
+	)
+	addbutton := w.monster_addbutton(app, id, matlist)
+	gbox := container.NewGridWithColumns(3, list, addbutton)
+	w.window.SetContent(gbox)
+	w.window.Show()
 }
