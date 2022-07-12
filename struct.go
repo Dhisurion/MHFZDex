@@ -108,17 +108,17 @@ type MonsterStruct struct {
 }
 
 type TempMonsterStruct struct {
-	Name        string     `json:"Name" bson:"Name"`
-	Fire        [7]int     `json:"FireWeakness" bson:"FireWeakness"`
-	Thunder     [7]int     `json:"ThunderWeakness" bson:"ThunderWeakness"`
-	Water       [7]int     `json:"WaterWeakness" bson:"WaterWeakness"`
-	Ice         [7]int     `json:"IceWeakness" bson:"IceWeakness"`
-	Dragon      [7]int     `json:"DragonWeakness" bson:"DragonWeakness"`
-	LRMat       [10]string `json:"MaterialsLowRank" bson:"MaterialsLowRank"`
-	HRMat       [10]string `json:"MaterialsHighRank" bson:"MaterialsHighRank"`
-	GouRMat     [10]string `json:"MaterialsGouRank" bson:"MaterialsGouRank"`
-	GRMat       [10]string `json:"MaterialsGRank" bson:"MaterialsGRank"`
-	ZRMat       [10]string `json:"MaterialsZenithRank" bson:"MaterialsZenithRank"`
-	EncodedIcon string     `json:"Icon" bson:"Icon"`
-	EncodedPic  string     `json:"Pic" bson:"Pic"`
+	Name        string     `json:"Name" bson:"Name,omitempty"`
+	Fire        [7]int     `json:"FireWeakness" bson:"FireWeakness,omitempty"`
+	Thunder     [7]int     `json:"ThunderWeakness" bson:"ThunderWeakness,omitempty"`
+	Water       [7]int     `json:"WaterWeakness" bson:"WaterWeakness,omitempty"`
+	Ice         [7]int     `json:"IceWeakness" bson:"IceWeakness,omitempty"`
+	Dragon      [7]int     `json:"DragonWeakness" bson:"DragonWeakness,omitempty"`
+	LRMat       [10]string `json:"MaterialsLowRank" bson:"MaterialsLowRank,omitempty"`
+	HRMat       [10]string `json:"MaterialsHighRank" bson:"MaterialsHighRank,omitempty"`
+	GouRMat     [10]string `json:"MaterialsGouRank" bson:"MaterialsGouRank,omitempty"`
+	GRMat       [10]string `json:"MaterialsGRank" bson:"MaterialsGRank,omitempty"`
+	ZRMat       [10]string `json:"MaterialsZenithRank" bson:"MaterialsZenithRank,omitempty"`
+	EncodedIcon string     `json:"Icon" bson:"Icon,omitempty"`
+	EncodedPic  string     `json:"Pic" bson:"Pic,omitempty"`
 }

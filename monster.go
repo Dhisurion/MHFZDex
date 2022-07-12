@@ -629,7 +629,7 @@ func (w *win) listUpdate(app fyne.App, id widget.ListItemID,
 	gbox := container.New(layout.NewGridLayout(3), list, monsterpic, materials, buttons, weakness)
 
 	list.OnSelected = func(id widget.ListItemID) {
-
+		//id2 = id
 		updatebutton := w.monster_updatebutton(app, id, matlist, Monsters[id])
 		deletebutton := w.monster_deletebutton(app, id, matlist, Monsters[id])
 
@@ -1028,6 +1028,7 @@ func (w *win) monster_updatebutton(app fyne.App, id int, matlist *widget.List, M
 			/*Get Materials*/
 			//Low Rank Mats
 			tempmonster.LRMat[0] = InputLRMat0.Text
+			tempmonster.LRMat[1] = InputLRMat1.Text
 			tempmonster.LRMat[2] = InputLRMat2.Text
 			tempmonster.LRMat[3] = InputLRMat3.Text
 			tempmonster.LRMat[4] = InputLRMat4.Text
@@ -1107,7 +1108,13 @@ func (w *win) monster_deletebutton(app fyne.App, id int, matlist *widget.List, M
 			w.listUpdate(app, id, matlist)
 		}
 		if id < 0 {
-			w.initemptylist(app, id, matlist)
+			id = 0
+			list := initemptylist()
+			addbutton := w.monster_addbutton(app, id, matlist)
+			gbox := container.NewGridWithColumns(3, list, addbutton)
+			w.window.SetContent(gbox)
+			w.window.Show()
+
 		}
 	})
 
@@ -1150,8 +1157,9 @@ func (w *win) initmaterialbuttons(app fyne.App, id int, matlist *widget.List, Mo
 	return materialbuttons
 }
 
-func (w *win) initemptylist(app fyne.App, id int, matlist *widget.List) {
-	id = 0
+//inits list ----can be used for every category----
+func initemptylist() *widget.List {
+
 	list := widget.NewList(
 		func() int {
 			return 0
@@ -1164,8 +1172,6 @@ func (w *win) initemptylist(app fyne.App, id int, matlist *widget.List) {
 			c.Objects[0].(*widget.Label).SetText("")
 		},
 	)
-	addbutton := w.monster_addbutton(app, id, matlist)
-	gbox := container.NewGridWithColumns(3, list, addbutton)
-	w.window.SetContent(gbox)
-	w.window.Show()
+	return list
+
 }

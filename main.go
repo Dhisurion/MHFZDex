@@ -97,25 +97,3 @@ func ArmorWindow() *win { //launches ArmorWindow
 		window:  nil,
 	}
 }
-
-/*IconSelectButton := widget.NewButton("Icon...", func() {
-	//w.window = (f *FileDialog) Show()
-	//FileDialog :=
-	dialog.NewFileOpen(func(uc fyne.URIReadCloser, e error),fyne.Window {
-		if e != nil {
-			dialog.ShowInformation("Open Error", uc.URI().Path(), w)
-			return
-		}
-		if _, ok := uc.(io.ReadSeeker); ok {
-			dialog.ShowInformation("Seeker OK", uc.URI().Path(), w)
-		}
-		stat, err := os.Stat(uc.URI().Path())
-		if err != nil {
-			dialog.ShowInformation("Stat Error", uc.URI().Path()+err.Error(), w)
-		} else {
-			dialog.ShowInformation("Stat Success", fmt.Sprintf("%s %v", uc.URI().Path(), stat.Size()), w)
-		}
-
-	})
-w.window.Show()
-})*/
