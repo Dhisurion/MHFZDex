@@ -629,7 +629,7 @@ func (w *win) listUpdate(app fyne.App, id widget.ListItemID,
 	gbox := container.New(layout.NewGridLayout(3), list, monsterpic, materials, buttons, weakness)
 
 	list.OnSelected = func(id widget.ListItemID) {
-		//id2 = id
+
 		updatebutton := w.monster_updatebutton(app, id, matlist, Monsters[id])
 		deletebutton := w.monster_deletebutton(app, id, matlist, Monsters[id])
 

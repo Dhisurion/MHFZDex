@@ -309,7 +309,7 @@ func (w *win) weapon_updatebutton(app fyne.App, Weapon WeaponStruct) fyne.Canvas
 			tempweapon.Quantity, _ = strconv.Atoi(InputWeaponQuantity.Text)
 
 			//UpdateOneWeapon(client, ctx, Weapon)
-			w.listUpdateItem(app)
+			//w.listUpdateItem(app)
 			wUpdate.Close()
 
 		})

@@ -43,12 +43,12 @@ type ItemStruct struct {
 }
 
 type TempItemStruct struct {
-	Name        string `json:"Name" bson:"Name"`
-	Rarity      int    `json:"Rarity" bson:"Rarity"`
-	Qty         int    `json:"Qty" bson:"Qty"`
-	Sell        int    `json:"Sell" bson:"Sell"`
-	Buy         int    `json:"Buy" bson:"Buy"`
-	EncodedIcon string `json:"Icon" bson:"Icon"`
+	Name        string `json:"Name" bson:"Name,omitempty"`
+	Rarity      int    `json:"Rarity" bson:"Rarity,omitempty"`
+	Qty         int    `json:"Qty" bson:"Qty,omitempty"`
+	Sell        int    `json:"Sell" bson:"Sell,omitempty"`
+	Buy         int    `json:"Buy" bson:"Buy,omitempty"`
+	EncodedIcon string `json:"Icon" bson:"Icon,omitempty"`
 }
 
 //Weapon

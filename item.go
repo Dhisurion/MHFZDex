@@ -19,39 +19,21 @@ import (
 
 func (w *win) ItemUI(app fyne.App) {
 	w.window = app.NewWindow("Item")
-
+	var id widget.ListItemID
 	Items := decodeitems()
 
 	itembuttons := w.item_addbutton(app)
 
-	list := widget.NewList(
-		func() int {
-			return len(Items)
-		},
-		func() fyne.CanvasObject {
-			return container.NewHBox(widget.NewIcon(fyne.NewStaticResource("Item", theme.AccountIcon().Content())), widget.NewLabel("Template Object"), widget.NewLabel("Template Object"), widget.NewLabel("Template Object"), widget.NewLabel("Template Object"), widget.NewLabel("Template Object"))
-		},
-		func(id widget.ListItemID, obj fyne.CanvasObject) {
-
-			c := obj.(*fyne.Container)
-			c.Objects[0].(*widget.Icon).SetResource(fyne.NewStaticResource(Items[id].Name, Items[id].icon))
-			c.Objects[1].(*widget.Label).SetText(Items[id].Name)
-			c.Objects[2].(*widget.Label).SetText("Rarity: " + strconv.Itoa((Items[id].Rarity)))
-			c.Objects[3].(*widget.Label).SetText("Qty: " + strconv.Itoa((Items[id].Qty)))
-			c.Objects[4].(*widget.Label).SetText("Sell: " + strconv.Itoa((Items[id].Sell)))
-			c.Objects[5].(*widget.Label).SetText("Buy: " + strconv.Itoa((Items[id].Buy)))
-
-		},
-	)
+	list, id := initList_Item(Items, id)
 
 	list.OnSelected = func(id widget.ListItemID) {
 		icon := widget.NewIcon(fyne.NewStaticResource("icon", Items[id].icon))
 
 		itemname := widget.NewLabel(Items[id].Name)
 
-		updatebutton := w.item_updatebutton(app, Items[id])
+		updatebutton := w.item_updatebutton(app, Items[id], id)
 
-		deletebutton := w.item_deletebutton(app, Items[id])
+		deletebutton := w.item_deletebutton(app, Items[id], id)
 
 		cancel := widget.NewButton("Cancel", func() {
 			w.window.Close()
@@ -139,39 +121,59 @@ func (w *win) item_addbutton(app fyne.App) fyne.CanvasObject {
 	return container.NewVBox(add)
 }
 
-func (w *win) listUpdateItem(app fyne.App) { //function updates materials when another Rank was selected
+func (w *win) listUpdateItem(app fyne.App, id widget.ListItemID) { //function updates materials when another Rank was selected
 	Items := decodeitems()
 	itembuttons := w.item_addbutton(app)
 
-	icon := widget.NewIcon(fyne.NewStaticResource("icon", Items[1].icon))
+	Itemicon := widget.NewIcon(fyne.NewStaticResource("icon", Items[id].icon))
 
-	list := widget.NewList(
-		func() int {
-			return len(Items)
-		},
-		func() fyne.CanvasObject {
-			return container.NewHBox(widget.NewIcon(fyne.NewStaticResource("Item", fyne.CurrentApp().Icon().Content())), widget.NewLabel("Template Object"), widget.NewLabel("Template Object"), widget.NewLabel("Template Object"), widget.NewLabel("Template Object"), widget.NewLabel("Template Object"))
-		},
-		func(id widget.ListItemID, obj fyne.CanvasObject) {
+	itemname := widget.NewLabel(Items[id].Name)
 
-			c := obj.(*fyne.Container)
-			c.Objects[0].(*widget.Icon).SetResource(fyne.NewStaticResource(Items[id].Name, Items[id].icon))
-			c.Objects[1].(*widget.Label).SetText(Items[id].Name)
-			c.Objects[2].(*widget.Label).SetText("Rarity: " + strconv.Itoa((Items[id].Rarity)))
-			c.Objects[3].(*widget.Label).SetText("Qty: " + strconv.Itoa((Items[id].Qty)))
-			c.Objects[4].(*widget.Label).SetText("Sell: " + strconv.Itoa((Items[id].Sell)))
-			c.Objects[5].(*widget.Label).SetText("Buy: " + strconv.Itoa((Items[id].Buy)))
+	updatebutton := w.item_updatebutton(app, Items[id], id)
 
-		},
-	)
+	deletebutton := w.item_deletebutton(app, Items[id], id)
 
-	gbox := container.New(layout.NewGridLayout(3), list, itembuttons, icon)
+	cancel := widget.NewButton("Cancel", func() {
+		w.window.Close()
+	})
+	choice := container.New(layout.NewVBoxLayout(), itemname, updatebutton, deletebutton, cancel)
+
+	list, id := initList_Item(Items, id)
+
+	list.OnSelected = func(id widget.ListItemID) {
+		icon := widget.NewIcon(fyne.NewStaticResource("icon", Items[id].icon))
+
+		itemname := widget.NewLabel(Items[id].Name)
+
+		updatebutton := w.item_updatebutton(app, Items[id], id)
+
+		deletebutton := w.item_deletebutton(app, Items[id], id)
+
+		cancel := widget.NewButton("Cancel", func() {
+			w.window.Close()
+		})
+		choice := container.New(layout.NewVBoxLayout(), itemname, updatebutton, deletebutton, cancel)
+
+		gbox := container.New(layout.NewGridLayout(3), list, choice, itembuttons, icon) //display gbox
+		w.window.SetContent(gbox)
+		w.window.Show()
+
+	}
+
+	list.OnUnselected = func(id widget.ListItemID) {
+
+		gbox := container.New(layout.NewGridLayout(3), list, itembuttons) //remove additional widgets
+		w.window.SetContent(gbox)                                         //display gbox
+		w.window.Show()
+	}
+
+	gbox := container.New(layout.NewGridLayout(3), list, choice, itembuttons, Itemicon)
 
 	w.window.SetContent(gbox)
 	w.window.Show()
 }
 
-func (w *win) item_updatebutton(app fyne.App, Item ItemStruct) fyne.CanvasObject {
+func (w *win) item_updatebutton(app fyne.App, Item ItemStruct, id widget.ListItemID) fyne.CanvasObject {
 
 	update := widget.NewButton("Update", func() { //Button to Update Data
 		wUpdate := app.NewWindow("Update Data")
@@ -206,18 +208,26 @@ func (w *win) item_updatebutton(app fyne.App, Item ItemStruct) fyne.CanvasObject
 		})
 
 		updateData := widget.NewButton("Update", func() { //Button to add into ItemName typed Data
-			tempitem.Name = InputItemName.Text
-			tempitem.Rarity, _ = strconv.Atoi(InputItemRarity.Text)
-			//tempitem.rarity, _= strconv.Atoi(InputItemRarity.Text)
+			if InputItemName.Text != "" {
+				tempitem.Name = InputItemName.Text
+			}
+			if InputItemRarity.Text != "" {
+				tempitem.Rarity, _ = strconv.Atoi(InputItemRarity.Text)
+				//tempitem.rarity, _= strconv.Atoi(InputItemRarity.Text)
+			}
+			if InputItemQty.Text != "" {
+				tempitem.Qty, _ = strconv.Atoi(InputItemQty.Text)
+			}
 
-			tempitem.Qty, _ = strconv.Atoi(InputItemQty.Text)
-
-			tempitem.Sell, _ = strconv.Atoi(InputItemSell.Text)
-
-			tempitem.Buy, _ = strconv.Atoi(InputItemBuy.Text)
+			if InputItemSell.Text != "" {
+				tempitem.Sell, _ = strconv.Atoi(InputItemSell.Text)
+			}
+			if InputItemBuy.Text != "" {
+				tempitem.Buy, _ = strconv.Atoi(InputItemBuy.Text)
+			}
 
 			UpdateOneItem(client, ctx, Item)
-			w.listUpdateItem(app)
+			w.listUpdateItem(app, id)
 			wUpdate.Close()
 
 		})
@@ -236,10 +246,34 @@ func (w *win) item_updatebutton(app fyne.App, Item ItemStruct) fyne.CanvasObject
 	return container.NewVBox(update)
 }
 
-func (w *win) item_deletebutton(app fyne.App, Item ItemStruct) fyne.CanvasObject {
+func (w *win) item_deletebutton(app fyne.App, Item ItemStruct, id widget.ListItemID) fyne.CanvasObject {
 	delete := widget.NewButton("Delete", func() { //Button to Delete Items
 		DeleteOneItem(client, ctx, Item)
 
 	})
 	return container.NewVBox(delete)
+}
+
+func initList_Item(Items []ItemStruct, id widget.ListItemID) (*widget.List, widget.ListItemID) {
+
+	list := widget.NewList(
+		func() int {
+			return len(Items)
+		},
+		func() fyne.CanvasObject {
+			return container.NewHBox(widget.NewIcon(fyne.NewStaticResource("Item", theme.AccountIcon().Content())), widget.NewLabel("Template Object"), widget.NewLabel("Template Object"), widget.NewLabel("Template Object"), widget.NewLabel("Template Object"), widget.NewLabel("Template Object"))
+		},
+		func(id widget.ListItemID, obj fyne.CanvasObject) {
+
+			c := obj.(*fyne.Container)
+			c.Objects[0].(*widget.Icon).SetResource(fyne.NewStaticResource(Items[id].Name, Items[id].icon))
+			c.Objects[1].(*widget.Label).SetText(Items[id].Name)
+			c.Objects[2].(*widget.Label).SetText("Rarity: " + strconv.Itoa((Items[id].Rarity)))
+			c.Objects[3].(*widget.Label).SetText("Qty: " + strconv.Itoa((Items[id].Qty)))
+			c.Objects[4].(*widget.Label).SetText("Sell: " + strconv.Itoa((Items[id].Sell)))
+			c.Objects[5].(*widget.Label).SetText("Buy: " + strconv.Itoa((Items[id].Buy)))
+
+		},
+	)
+	return list, id
 }
