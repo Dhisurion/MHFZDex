@@ -38,8 +38,8 @@ func (w *win) WeaponUI(app fyne.App) {
 			w.window.Close()
 		})
 		choice := container.New(layout.NewVBoxLayout(), weaponname, updatebutton, deletebutton, cancel)
-
-		gbox := container.New(layout.NewGridLayout(3), list, choice, weaponbuttons, icon) //display gbox
+		weaponmaterial := w.weaponmaterial(app, list, Weapons[id])
+		gbox := container.New(layout.NewGridLayout(3), list, choice, weaponbuttons, weaponmaterial, icon) //display gbox
 		w.window.SetContent(gbox)
 		w.window.Show()
 
@@ -114,8 +114,7 @@ func (w *win) weapon_addbutton(app fyne.App, id widget.ListItemID) fyne.CanvasOb
 		TextWeaponAffinity := canvas.NewText("Affinity:", color.White)
 		TextWeaponDefense := canvas.NewText("Defense:", color.White)
 		TextWeaponPrice := canvas.NewText("Price:", color.White)
-		TextWeaponMaterial := canvas.NewText("Material:", color.White)
-		TextWeaponQuantity := canvas.NewText("Quantity of Material:", color.White)
+
 		InputWeaponName := widget.NewEntry()
 		InputWeaponKind := widget.NewEntry()
 		InputWeaponRarity := widget.NewEntry()
@@ -126,8 +125,33 @@ func (w *win) weapon_addbutton(app fyne.App, id widget.ListItemID) fyne.CanvasOb
 		InputWeaponAffinity := widget.NewEntry()
 		InputWeaponDefense := widget.NewEntry()
 		InputWeaponPrice := widget.NewEntry()
-		InputWeaponMaterial := widget.NewEntry()
-		InputWeaponQuantity := widget.NewEntry()
+
+		//Object
+		InputMaterial1 := widget.NewEntry()
+		InputMaterial2 := widget.NewEntry()
+		InputMaterial3 := widget.NewEntry()
+		InputMaterial4 := widget.NewEntry()
+
+		InputQtyMat1 := widget.NewEntry()
+		InputQtyMat2 := widget.NewEntry()
+		InputQtyMat3 := widget.NewEntry()
+		InputQtyMat4 := widget.NewEntry()
+
+		InputWeaponObject := container.NewGridWithColumns(2,
+			container.NewGridWithRows(5,
+				widget.NewLabel("Material:"),
+				InputMaterial1,
+				InputMaterial2,
+				InputMaterial3,
+				InputMaterial4),
+
+			container.NewGridWithRows(5,
+				widget.NewLabel("Quantity:"),
+				InputQtyMat1,
+				InputQtyMat2,
+				InputQtyMat3,
+				InputQtyMat4),
+		)
 
 		InputWeaponIcon := widget.NewButton("File Open With Filter (.jpg or .png)", func() {
 			fd := dialog.NewFileOpen(func(reader fyne.URIReadCloser, err error) {
@@ -160,8 +184,16 @@ func (w *win) weapon_addbutton(app fyne.App, id widget.ListItemID) fyne.CanvasOb
 			tempweapon.Affinity, _ = strconv.Atoi(InputWeaponAffinity.Text)
 			tempweapon.Defense, _ = strconv.Atoi(InputWeaponDefense.Text)
 			tempweapon.Price, _ = strconv.Atoi(InputWeaponPrice.Text)
-			tempweapon.Material = InputWeaponMaterial.Text
-			tempweapon.Quantity, _ = strconv.Atoi(InputWeaponQuantity.Text)
+
+			tempweapon.Material[0] = InputMaterial1.Text
+			tempweapon.Material[1] = InputMaterial2.Text
+			tempweapon.Material[2] = InputMaterial3.Text
+			tempweapon.Material[3] = InputMaterial4.Text
+
+			tempweapon.Quantity[0], _ = strconv.Atoi(InputQtyMat1.Text)
+			tempweapon.Quantity[1], _ = strconv.Atoi(InputQtyMat2.Text)
+			tempweapon.Quantity[2], _ = strconv.Atoi(InputQtyMat3.Text)
+			tempweapon.Quantity[3], _ = strconv.Atoi(InputQtyMat4.Text)
 
 			InsertOneWeapon(client, ctx) //needs to be coded
 			w.listUpdateWeapon(app, id)
@@ -174,7 +206,7 @@ func (w *win) weapon_addbutton(app fyne.App, id widget.ListItemID) fyne.CanvasOb
 
 		})
 
-		wInput.SetContent(container.New(layout.NewVBoxLayout(), TextWeaponName, InputWeaponName, InputWeaponIcon, TextWeaponKind, InputWeaponKind, TextWeaponRarity, InputWeaponRarity, TextWeaponAttack, InputWeaponAttack, TextWeaponElement, InputWeaponElement, TextWeaponElementvalue, InputWeaponElementvalue, TextWeaponSharpness, InputWeaponSharpness, TextWeaponAffinity, InputWeaponAffinity, TextWeaponDefense, InputWeaponDefense, TextWeaponPrice, InputWeaponPrice, TextWeaponMaterial, InputWeaponMaterial, TextWeaponQuantity, InputWeaponQuantity, addData, cancel)) //Layout for the "Insertion-Window"
+		wInput.SetContent(container.New(layout.NewVBoxLayout(), TextWeaponName, InputWeaponName, InputWeaponIcon, TextWeaponKind, InputWeaponKind, TextWeaponRarity, InputWeaponRarity, TextWeaponAttack, InputWeaponAttack, TextWeaponElement, InputWeaponElement, TextWeaponElementvalue, InputWeaponElementvalue, TextWeaponSharpness, InputWeaponSharpness, TextWeaponAffinity, InputWeaponAffinity, TextWeaponDefense, InputWeaponDefense, TextWeaponPrice, InputWeaponPrice, InputWeaponObject, addData, cancel)) //Layout for the "Insertion-Window"
 		wInput.Resize(fyne.NewSize(400, 200))
 		wInput.CenterOnScreen()
 		wInput.Show()
@@ -217,8 +249,8 @@ func (w *win) listUpdateWeapon(app fyne.App, id widget.ListItemID) { //function 
 		})
 
 		choice := container.New(layout.NewVBoxLayout(), weaponname, updatebutton, deletebutton, cancel)
-
-		gbox := container.New(layout.NewGridLayout(3), list, choice, weaponbuttons, icon)
+		weaponmaterial := w.weaponmaterial(app, list, Weapons[id])
+		gbox := container.New(layout.NewGridLayout(3), list, choice, weaponbuttons, weaponmaterial, icon)
 		w.window.SetContent(gbox)
 		w.window.Show()
 	}
@@ -249,8 +281,7 @@ func (w *win) weapon_updatebutton(app fyne.App, Weapon WeaponStruct, id widget.L
 		TextWeaponAffinity := canvas.NewText("Affinity:", color.White)
 		TextWeaponDefense := canvas.NewText("Defense:", color.White)
 		TextWeaponPrice := canvas.NewText("Price:", color.White)
-		TextWeaponMaterial := canvas.NewText("Material:", color.White)
-		TextWeaponQuantity := canvas.NewText("Quantity of Material:", color.White)
+
 		InputWeaponName := widget.NewEntry()
 		InputWeaponKind := widget.NewEntry()
 		InputWeaponRarity := widget.NewEntry()
@@ -261,8 +292,33 @@ func (w *win) weapon_updatebutton(app fyne.App, Weapon WeaponStruct, id widget.L
 		InputWeaponAffinity := widget.NewEntry()
 		InputWeaponDefense := widget.NewEntry()
 		InputWeaponPrice := widget.NewEntry()
-		InputWeaponMaterial := widget.NewEntry()
-		InputWeaponQuantity := widget.NewEntry()
+
+		//Object
+		InputMaterial1 := widget.NewEntry()
+		InputMaterial2 := widget.NewEntry()
+		InputMaterial3 := widget.NewEntry()
+		InputMaterial4 := widget.NewEntry()
+
+		InputQtyMat1 := widget.NewEntry()
+		InputQtyMat2 := widget.NewEntry()
+		InputQtyMat3 := widget.NewEntry()
+		InputQtyMat4 := widget.NewEntry()
+
+		InputWeaponObject := container.NewGridWithColumns(2,
+			container.NewGridWithRows(5,
+				widget.NewLabel("Material:"),
+				InputMaterial1,
+				InputMaterial2,
+				InputMaterial3,
+				InputMaterial4),
+
+			container.NewGridWithRows(5,
+				widget.NewLabel("Quantity:"),
+				InputQtyMat1,
+				InputQtyMat2,
+				InputQtyMat3,
+				InputQtyMat4),
+		)
 
 		InputWeaponIcon := widget.NewButton("File Open With Filter (.jpg or .png)", func() {
 			fd := dialog.NewFileOpen(func(reader fyne.URIReadCloser, err error) {
@@ -313,11 +369,30 @@ func (w *win) weapon_updatebutton(app fyne.App, Weapon WeaponStruct, id widget.L
 			if InputWeaponPrice.Text != "" {
 				tempweapon.Price, _ = strconv.Atoi(InputWeaponPrice.Text)
 			}
-			if InputWeaponMaterial.Text != "" {
-				tempweapon.Material = InputWeaponMaterial.Text
+			//Material
+			if InputMaterial1.Text != "" {
+				tempweapon.Material[0] = InputMaterial1.Text
 			}
-			if InputWeaponQuantity.Text != "" {
-				tempweapon.Quantity, _ = strconv.Atoi(InputWeaponQuantity.Text)
+			if InputMaterial1.Text != "" {
+				tempweapon.Material[1] = InputMaterial2.Text
+			}
+			if InputMaterial1.Text != "" {
+				tempweapon.Material[2] = InputMaterial3.Text
+			}
+			if InputMaterial1.Text != "" {
+				tempweapon.Material[3] = InputMaterial4.Text
+			}
+			if InputQtyMat1.Text != "" {
+				tempweapon.Quantity[0], _ = strconv.Atoi(InputQtyMat1.Text)
+			}
+			if InputQtyMat1.Text != "" {
+				tempweapon.Quantity[1], _ = strconv.Atoi(InputQtyMat2.Text)
+			}
+			if InputQtyMat1.Text != "" {
+				tempweapon.Quantity[2], _ = strconv.Atoi(InputQtyMat3.Text)
+			}
+			if InputQtyMat1.Text != "" {
+				tempweapon.Quantity[3], _ = strconv.Atoi(InputQtyMat4.Text)
 			}
 
 			UpdateOneWeapon(client, ctx, Weapon)
@@ -331,7 +406,7 @@ func (w *win) weapon_updatebutton(app fyne.App, Weapon WeaponStruct, id widget.L
 
 		})
 
-		wUpdate.SetContent(container.New(layout.NewVBoxLayout(), TextWeaponName, InputWeaponName, InputWeaponIcon, TextWeaponKind, InputWeaponKind, TextWeaponRarity, InputWeaponRarity, TextWeaponAttack, InputWeaponAttack, TextWeaponElement, InputWeaponElement, TextWeaponElementvalue, InputWeaponElementvalue, TextWeaponSharpness, InputWeaponSharpness, TextWeaponAffinity, InputWeaponAffinity, TextWeaponDefense, InputWeaponDefense, TextWeaponPrice, InputWeaponPrice, TextWeaponMaterial, InputWeaponMaterial, TextWeaponQuantity, InputWeaponQuantity, updateData, cancel)) //Layout for the "Insertion-Window"
+		wUpdate.SetContent(container.New(layout.NewVBoxLayout(), TextWeaponName, InputWeaponName, InputWeaponIcon, TextWeaponKind, InputWeaponKind, TextWeaponRarity, InputWeaponRarity, TextWeaponAttack, InputWeaponAttack, TextWeaponElement, InputWeaponElement, TextWeaponElementvalue, InputWeaponElementvalue, TextWeaponSharpness, InputWeaponSharpness, TextWeaponAffinity, InputWeaponAffinity, TextWeaponDefense, InputWeaponDefense, TextWeaponPrice, InputWeaponPrice, InputWeaponObject, updateData, cancel)) //Layout for the "Insertion-Window"
 		wUpdate.Resize(fyne.NewSize(500, 300))
 		wUpdate.CenterOnScreen()
 		wUpdate.Show()
@@ -354,7 +429,7 @@ func initList_Weapon(Weapons []WeaponStruct, id widget.ListItemID) (*widget.List
 			return len(Weapons)
 		},
 		func() fyne.CanvasObject {
-			return container.NewHBox(widget.NewIcon(fyne.NewStaticResource("Weapon", weapon.icon)), widget.NewLabel("Template Object"), widget.NewLabel("Template Object"), widget.NewLabel("Template Object"), widget.NewLabel("Template Object"), widget.NewLabel("Template Object"), widget.NewLabel("Template Object"), widget.NewLabel("Template Object"), widget.NewLabel("Template Object"), widget.NewLabel("Template Object"), widget.NewLabel("Template Object"), widget.NewLabel("Template Object"), widget.NewLabel("Template Object"))
+			return container.NewHBox(widget.NewIcon(fyne.NewStaticResource("Weapon", weapon.icon)), widget.NewLabel("Template Object"), widget.NewLabel("Template Object"), widget.NewLabel("Template Object"), widget.NewLabel("Template Object"), widget.NewLabel("Template Object"), widget.NewLabel("Template Object"), widget.NewLabel("Template Object"), widget.NewLabel("Template Object"), widget.NewLabel("Template Object"), widget.NewLabel("Template Object"))
 		},
 		func(id widget.ListItemID, obj fyne.CanvasObject) {
 			c := obj.(*fyne.Container)
@@ -369,9 +444,28 @@ func initList_Weapon(Weapons []WeaponStruct, id widget.ListItemID) (*widget.List
 			c.Objects[8].(*widget.Label).SetText("Affinity: " + strconv.Itoa((Weapons[id].Affinity)))
 			c.Objects[9].(*widget.Label).SetText("Defense: " + strconv.Itoa((Weapons[id].Defense)))
 			c.Objects[10].(*widget.Label).SetText("Price: " + strconv.Itoa((Weapons[id].Price)))
-			c.Objects[11].(*widget.Label).SetText("Material: " + (Weapons[id].Material))
-			c.Objects[12].(*widget.Label).SetText("Quantity: " + strconv.Itoa((Weapons[id].Quantity)))
 		},
 	)
 	return list, id
+}
+
+func (W *win) weaponmaterial(app fyne.App, li *widget.List, Weapon WeaponStruct) fyne.CanvasObject {
+	var data = [5][2]string{
+		[2]string{"Material", "Quantity"},
+		[2]string{Weapon.Material[0], strconv.Itoa(Weapon.Quantity[0])},
+		[2]string{Weapon.Material[1], strconv.Itoa(Weapon.Quantity[1])},
+		[2]string{Weapon.Material[2], strconv.Itoa(Weapon.Quantity[2])},
+		[2]string{Weapon.Material[3], strconv.Itoa(Weapon.Quantity[3])}}
+
+	table := widget.NewTable(
+		func() (int, int) {
+			return len(data), len(data[0])
+		},
+		func() fyne.CanvasObject {
+			return widget.NewLabel("wide content")
+		},
+		func(i widget.TableCellID, o fyne.CanvasObject) {
+			o.(*widget.Label).SetText(data[i.Row][i.Col])
+		})
+	return table
 }
