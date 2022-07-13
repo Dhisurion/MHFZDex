@@ -96,7 +96,7 @@ func decodeweapons() []WeaponStruct {
 			log.Fatal(err)
 		}
 
-		Weapons[i].iconb = b
+		Weapons[i].icon = b
 
 	}
 	return Weapons

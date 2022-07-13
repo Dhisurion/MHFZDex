@@ -62,7 +62,7 @@ func imageOpenedWeaponIcon(f fyne.URIReadCloser) {
 	defer f.Close()
 
 	selectedWeaponicon = loadImage(f)
-	tempitem.EncodedIcon = base64.StdEncoding.EncodeToString([]byte(selectedWeaponicon.Resource.Content()))
+	tempweapon.EncodedIcon = base64.StdEncoding.EncodeToString([]byte(selectedWeaponicon.Resource.Content()))
 
 }
 

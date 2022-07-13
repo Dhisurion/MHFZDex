@@ -53,7 +53,7 @@ type TempItemStruct struct {
 
 //Weapon
 type WeaponStruct struct {
-	iconb        []byte
+	icon         []byte
 	ID           primitive.ObjectID `bson:"_id,omitempty"`
 	Name         string             `json:"Name" bson:"Name"`
 	Kind         string             `json:"Kind" bson:"Kind"`
@@ -83,7 +83,7 @@ type TempWeaponStruct struct {
 	Price        int    `json:"Price" bson:"Price"`
 	Material     string `json:"Material" bson:"Material"`
 	Quantity     int    `json:"Quantity" bson:"Quantity"`
-	Encoded      string `json:"Icon" bson:"Icon"`
+	EncodedIcon  string `json:"Icon" bson:"Icon"`
 }
 
 //Monster
