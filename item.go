@@ -22,7 +22,7 @@ func (w *win) ItemUI(app fyne.App) {
 	var id widget.ListItemID
 	Items := decodeitems()
 
-	itembuttons := w.item_addbutton(app)
+	itembuttons := w.item_addbutton(app, id)
 
 	list, id := initList_Item(Items, id)
 
@@ -60,7 +60,7 @@ func (w *win) ItemUI(app fyne.App) {
 	w.window.Show()
 }
 
-func (w *win) item_addbutton(app fyne.App) fyne.CanvasObject {
+func (w *win) item_addbutton(app fyne.App, id widget.ListItemID) fyne.CanvasObject {
 
 	add := widget.NewButton("Add", func() { //Button to Add Data
 		wInput := app.NewWindow("Add Data")
@@ -102,7 +102,7 @@ func (w *win) item_addbutton(app fyne.App) fyne.CanvasObject {
 			tempitem.Buy, _ = strconv.Atoi(InputItemBuy.Text)
 
 			InsertOneItem(client, ctx)
-			//w.listUpdateItem(app)
+			w.listUpdateItem(app, id)
 			wInput.Close()
 
 		})
@@ -123,7 +123,7 @@ func (w *win) item_addbutton(app fyne.App) fyne.CanvasObject {
 
 func (w *win) listUpdateItem(app fyne.App, id widget.ListItemID) { //function updates materials when another Rank was selected
 	Items := decodeitems()
-	itembuttons := w.item_addbutton(app)
+	itembuttons := w.item_addbutton(app, id)
 
 	Itemicon := widget.NewIcon(fyne.NewStaticResource("icon", Items[id].icon))
 
@@ -208,23 +208,12 @@ func (w *win) item_updatebutton(app fyne.App, Item ItemStruct, id widget.ListIte
 		})
 
 		updateData := widget.NewButton("Update", func() { //Button to add into ItemName typed Data
-			if InputItemName.Text != "" {
-				tempitem.Name = InputItemName.Text
-			}
-			if InputItemRarity.Text != "" {
-				tempitem.Rarity, _ = strconv.Atoi(InputItemRarity.Text)
-				//tempitem.rarity, _= strconv.Atoi(InputItemRarity.Text)
-			}
-			if InputItemQty.Text != "" {
-				tempitem.Qty, _ = strconv.Atoi(InputItemQty.Text)
-			}
 
-			if InputItemSell.Text != "" {
-				tempitem.Sell, _ = strconv.Atoi(InputItemSell.Text)
-			}
-			if InputItemBuy.Text != "" {
-				tempitem.Buy, _ = strconv.Atoi(InputItemBuy.Text)
-			}
+			tempitem.Name = InputItemName.Text
+			tempitem.Rarity, _ = strconv.Atoi(InputItemRarity.Text)
+			tempitem.Qty, _ = strconv.Atoi(InputItemQty.Text)
+			tempitem.Sell, _ = strconv.Atoi(InputItemSell.Text)
+			tempitem.Buy, _ = strconv.Atoi(InputItemBuy.Text)
 
 			UpdateOneItem(client, ctx, Item)
 			w.listUpdateItem(app, id)
@@ -249,7 +238,18 @@ func (w *win) item_updatebutton(app fyne.App, Item ItemStruct, id widget.ListIte
 func (w *win) item_deletebutton(app fyne.App, Item ItemStruct, id widget.ListItemID) fyne.CanvasObject {
 	delete := widget.NewButton("Delete", func() { //Button to Delete Items
 		DeleteOneItem(client, ctx, Item)
-
+		id = id - 1
+		if id >= 0 {
+			w.listUpdateItem(app, id)
+		}
+		if id < 0 {
+			id = 0 //set id back to 0 , array out of bounds otherwise -> -1
+			list := initemptylist()
+			addbutton := w.item_addbutton(app, id)
+			gbox := container.NewGridWithColumns(3, list, addbutton)
+			w.window.SetContent(gbox)
+			w.window.Show()
+		}
 	})
 	return container.NewVBox(delete)
 }
