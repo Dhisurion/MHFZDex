@@ -13,15 +13,16 @@ import (
 
 //Item Dialog
 
-func imageOpenedItemIcon(f fyne.URIReadCloser) {
+func imageOpenedItemIcon(f fyne.URIReadCloser, tempitem TempItemStruct) string {
 	if f == nil {
 		log.Println("Cancelled")
-		return
+		return ""
 	}
 	defer f.Close()
 
 	selectedItemicon = loadImage(f)
 	tempitem.EncodedIcon = base64.StdEncoding.EncodeToString([]byte(selectedItemicon.Resource.Content()))
+	return tempitem.EncodedIcon
 	//showImage(f)
 }
 
@@ -62,7 +63,7 @@ func imageOpenedWeaponIcon(f fyne.URIReadCloser) {
 	defer f.Close()
 
 	selectedWeaponicon = loadImage(f)
-	tempitem.EncodedIcon = base64.StdEncoding.EncodeToString([]byte(selectedWeaponicon.Resource.Content()))
+	//tempitem.EncodedIcon = base64.StdEncoding.EncodeToString([]byte(selectedWeaponicon.Resource.Content()))
 
 }
 
@@ -76,7 +77,7 @@ func imageOpenedArmorIcon(f fyne.URIReadCloser) {
 	defer f.Close()
 
 	selectedArmoricon = loadImage(f)
-	tempitem.EncodedIcon = base64.StdEncoding.EncodeToString([]byte(selectedArmoricon.Resource.Content()))
+	//temparmor.EncodedIcon = base64.StdEncoding.EncodeToString([]byte(selectedArmoricon.Resource.Content()))
 
 }
 

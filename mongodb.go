@@ -79,7 +79,7 @@ func ping(client *mongo.Client, ctx context.Context) error {
 	return nil
 }*/
 
-func InsertOneItem(client *mongo.Client, ctx context.Context) error {
+func InsertOneItem(client *mongo.Client, ctx context.Context, tempitem TempItemStruct) error {
 	coll := client.Database("Frontier").Collection("Items")
 	doc := bson.D{{"Name", tempitem.Name}, {"Icon", tempitem.EncodedIcon}, {"Rarity", tempitem.Rarity}, {"Qty", tempitem.Qty}, {"Sell", tempitem.Sell}, {"Buy", tempitem.Buy}}
 	result, err := coll.InsertOne(context.TODO(), doc)
@@ -124,7 +124,7 @@ func Count(client *mongo.Client, ctx context.Context, t string) int64 {
 	return count
 }
 
-func UpdateOneItem(client *mongo.Client, ctx context.Context, Item ItemStruct) {
+func UpdateOneItem(client *mongo.Client, ctx context.Context, Item ItemStruct, tempitem TempItemStruct) {
 	coll := client.Database("Frontier").Collection("Items")
 
 	result, err := coll.UpdateOne(ctx,

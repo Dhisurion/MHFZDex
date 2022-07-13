@@ -61,7 +61,7 @@ func (w *win) ItemUI(app fyne.App) {
 }
 
 func (w *win) item_addbutton(app fyne.App, id widget.ListItemID) fyne.CanvasObject {
-
+	var tempitem TempItemStruct
 	add := widget.NewButton("Add", func() { //Button to Add Data
 		wInput := app.NewWindow("Add Data")
 
@@ -87,7 +87,7 @@ func (w *win) item_addbutton(app fyne.App, id widget.ListItemID) fyne.CanvasObje
 					return
 				}
 
-				imageOpenedItemIcon(reader)
+				imageOpenedItemIcon(reader, tempitem)
 			}, wInput)
 			fd.SetFilter(storage.NewExtensionFileFilter([]string{".png", ".jpg", ".jpeg"}))
 			fd.Show()
@@ -101,7 +101,7 @@ func (w *win) item_addbutton(app fyne.App, id widget.ListItemID) fyne.CanvasObje
 			tempitem.Sell, _ = strconv.Atoi(InputItemSell.Text)
 			tempitem.Buy, _ = strconv.Atoi(InputItemBuy.Text)
 
-			InsertOneItem(client, ctx)
+			InsertOneItem(client, ctx, tempitem)
 			w.listUpdateItem(app, id)
 			wInput.Close()
 
@@ -174,6 +174,14 @@ func (w *win) listUpdateItem(app fyne.App, id widget.ListItemID) { //function up
 }
 
 func (w *win) item_updatebutton(app fyne.App, Item ItemStruct, id widget.ListItemID) fyne.CanvasObject {
+	var tempitem TempItemStruct
+
+	tempitem.Name = Item.Name
+	tempitem.Rarity = Item.Rarity
+	tempitem.Qty = Item.Qty
+	tempitem.Qty = Item.Sell
+	tempitem.Buy = Item.Buy
+	tempitem.EncodedIcon = Item.Encoded
 
 	update := widget.NewButton("Update", func() { //Button to Update Data
 		wUpdate := app.NewWindow("Update Data")
@@ -200,7 +208,7 @@ func (w *win) item_updatebutton(app fyne.App, Item ItemStruct, id widget.ListIte
 					return
 				}
 
-				imageOpenedItemIcon(reader)
+				tempitem.EncodedIcon = imageOpenedItemIcon(reader, tempitem)
 			}, wUpdate)
 			fd.SetFilter(storage.NewExtensionFileFilter([]string{".png", ".jpg", ".jpeg"}))
 			fd.Show()
@@ -209,13 +217,23 @@ func (w *win) item_updatebutton(app fyne.App, Item ItemStruct, id widget.ListIte
 
 		updateData := widget.NewButton("Update", func() { //Button to add into ItemName typed Data
 
-			tempitem.Name = InputItemName.Text
-			tempitem.Rarity, _ = strconv.Atoi(InputItemRarity.Text)
-			tempitem.Qty, _ = strconv.Atoi(InputItemQty.Text)
-			tempitem.Sell, _ = strconv.Atoi(InputItemSell.Text)
-			tempitem.Buy, _ = strconv.Atoi(InputItemBuy.Text)
+			if InputItemName.Text != "" {
+				tempitem.Name = InputItemName.Text
+			}
+			if InputItemRarity.Text != "" {
+				tempitem.Rarity, _ = strconv.Atoi(InputItemRarity.Text)
+			}
+			if InputItemQty.Text != "" {
+				tempitem.Qty, _ = strconv.Atoi(InputItemQty.Text)
+			}
+			if InputItemSell.Text != "" {
+				tempitem.Sell, _ = strconv.Atoi(InputItemSell.Text)
+			}
+			if InputItemBuy.Text != "" {
+				tempitem.Buy, _ = strconv.Atoi(InputItemBuy.Text)
+			}
 
-			UpdateOneItem(client, ctx, Item)
+			UpdateOneItem(client, ctx, Item, tempitem)
 			w.listUpdateItem(app, id)
 			wUpdate.Close()
 

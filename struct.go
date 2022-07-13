@@ -43,6 +43,7 @@ type ItemStruct struct {
 }
 
 type TempItemStruct struct {
+	//ID          primitive.ObjectID `bson:"_id,omitempty"`
 	Name        string `json:"Name" bson:"Name,omitempty"`
 	Rarity      int    `json:"Rarity" bson:"Rarity,omitempty"`
 	Qty         int    `json:"Qty" bson:"Qty,omitempty"`
