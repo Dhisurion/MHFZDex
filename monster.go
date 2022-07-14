@@ -483,7 +483,7 @@ func (w *win) monster_addbutton(app fyne.App, id int, matlist *widget.List) fyne
 
 		})
 
-		wInput.SetContent(container.NewHScroll(container.New(layout.NewVBoxLayout(), MonsterName, monstericon, monsterpic, Weaknesses, inputmats, addData, cancel))) //Layout for the "Insertion-Window"
+		wInput.SetContent(container.NewScroll(container.New(layout.NewVBoxLayout(), MonsterName, monstericon, monsterpic, Weaknesses, inputmats, addData, cancel))) //Layout for the "Insertion-Window"
 		wInput.Resize(fyne.NewSize(400, 200))
 		wInput.CenterOnScreen()
 		wInput.Show()
@@ -1270,7 +1270,7 @@ func (w *win) monster_updatebutton(app fyne.App, id int, matlist *widget.List, M
 
 		})
 
-		wInput.SetContent(container.NewHScroll(container.New(layout.NewVBoxLayout(), MonsterName, monstericon, monsterpic, Weaknesses, inputmats, updateData, cancel))) //Layout for the "Insertion-Window"
+		wInput.SetContent(container.NewScroll(container.New(layout.NewVBoxLayout(), MonsterName, monstericon, monsterpic, Weaknesses, inputmats, updateData, cancel))) //Layout for the "Insertion-Window"
 		wInput.Resize(fyne.NewSize(400, 200))
 		wInput.CenterOnScreen()
 		wInput.Show()

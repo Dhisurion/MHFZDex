@@ -113,7 +113,7 @@ func (w *win) item_addbutton(app fyne.App, id widget.ListItemID) fyne.CanvasObje
 
 		})
 
-		wInput.SetContent(container.NewHScroll(container.New(layout.NewVBoxLayout(), TextItemName, InputItemName, InputItemIcon, TextItemRarity, InputItemRarity, TextItemQty, InputItemQty, TextItemSell, InputItemSell, TextItemBuy, InputItemBuy, addData, cancel))) //Layout for the "Insertion-Window"
+		wInput.SetContent(container.NewScroll(container.New(layout.NewVBoxLayout(), TextItemName, InputItemName, InputItemIcon, TextItemRarity, InputItemRarity, TextItemQty, InputItemQty, TextItemSell, InputItemSell, TextItemBuy, InputItemBuy, addData, cancel))) //Layout for the "Insertion-Window"
 		wInput.Resize(fyne.NewSize(400, 200))
 		wInput.CenterOnScreen()
 		wInput.Show()
@@ -245,7 +245,7 @@ func (w *win) item_updatebutton(app fyne.App, Item ItemStruct, id widget.ListIte
 
 		})
 
-		wUpdate.SetContent(container.NewHScroll(container.New(layout.NewVBoxLayout(), TextItemName, InputItemName, InputItemIcon, TextItemRarity, InputItemRarity, TextItemQty, InputItemQty, TextItemSell, InputItemSell, TextItemBuy, InputItemBuy, updateData, cancel))) //Layout for the "Insertion-Window"
+		wUpdate.SetContent(container.NewScroll(container.New(layout.NewVBoxLayout(), TextItemName, InputItemName, InputItemIcon, TextItemRarity, InputItemRarity, TextItemQty, InputItemQty, TextItemSell, InputItemSell, TextItemBuy, InputItemBuy, updateData, cancel))) //Layout for the "Insertion-Window"
 		wUpdate.Resize(fyne.NewSize(400, 200))
 		wUpdate.CenterOnScreen()
 		wUpdate.Show()
