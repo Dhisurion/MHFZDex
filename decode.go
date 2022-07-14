@@ -179,3 +179,49 @@ func decodemonsters() []MonsterStruct {
 	}
 	return Monsters
 }
+
+func decodearmors() []ArmorStruct {
+	Armors, err := ReadAllArmors(client, ctx)
+	if err != nil {
+		panic(err)
+	}
+
+	for i := range Armors {
+
+		decoded, err := base64.StdEncoding.DecodeString((Armors[i].EncodedIcon))
+		if err != nil {
+			fmt.Printf("Error decoding", err.Error())
+			panic(err)
+		}
+
+		f, err := os.Create("res/weapon/Weapon" + strconv.Itoa(i) + ".jpg")
+		if err != nil {
+			fmt.Printf("Error creating file", err.Error())
+			panic(err)
+		}
+
+		if _, err := f.Write(decoded); err != nil {
+			panic(err)
+		}
+
+		if err := f.Sync(); err != nil {
+			panic(err)
+		}
+
+		iconFile, err := os.Open("res/weapon/Weapon" + strconv.Itoa(i) + ".jpg")
+		if err != nil {
+			log.Fatal(err)
+		}
+
+		r := bufio.NewReader(iconFile)
+
+		b, err := ioutil.ReadAll(r)
+		if err != nil {
+			log.Fatal(err)
+		}
+
+		Armors[i].icon = b
+
+	}
+	return Armors
+}

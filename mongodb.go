@@ -290,3 +290,72 @@ func DeleteOneMonster(client *mongo.Client, ctx context.Context, Monster Monster
 	}
 	fmt.Printf("Deleted  %v Documents!\n", result.DeletedCount)
 }
+
+//Armors
+func ReadAllArmors(client *mongo.Client, ctx context.Context) ([]ArmorStruct, error) {
+	coll := client.Database("Frontier").Collection("Armors")
+
+	var results []ArmorStruct
+	cursor, err := coll.Find(ctx, bson.D{{}})
+	if err != nil {
+		log.Fatal(err)
+	}
+	defer cursor.Close(ctx)
+	for cursor.Next(ctx) {
+		var result ArmorStruct
+		err := cursor.Decode(&result)
+		if err != nil {
+			log.Fatal(err)
+		}
+		results = append(results, result)
+	}
+
+	if err := cursor.Err(); err != nil {
+		log.Fatal(err)
+	}
+
+	return results, err
+}
+
+func InsertOneArmor(client *mongo.Client, ctx context.Context, temparmor TempArmorStruct) error {
+	coll := client.Database("Frontier").Collection("Armors")
+	doc := bson.D{{"Name", temparmor.Name}, {"Icon", temparmor.EncodedIcon}, {"Kind", temparmor.Kind}, {"Rarity", temparmor.Rarity}, {"Defense", temparmor.Defense},
+		{"FireRes", temparmor.FireRes}, {"ThunderRes", temparmor.ThunderRes}, {"WaterRes", temparmor.WaterRes}, {"IceRes", temparmor.IceRes}, {"DragonRes", temparmor.DragonRes},
+		{"PriceForge", temparmor.PriceForge}, {"MaterialForge", temparmor.MaterialForge}, {"QuantityForge", temparmor.QuantityForge},
+		{"PriceUpgrade", temparmor.PriceUpgrade}, {"MaterialUpgrade", temparmor.MaterialUpgrade}, {"QuantityUpgrade", temparmor.QuantityUpgrade}}
+	result, err := coll.InsertOne(context.TODO(), doc)
+
+	if err != nil {
+		fmt.Printf("Inserted document with _id: %v\n", result.InsertedID)
+	}
+	return err
+}
+
+func UpdateOneArmor(client *mongo.Client, ctx context.Context, Armor ArmorStruct, temparmor TempArmorStruct) {
+	coll := client.Database("Frontier").Collection("Armors")
+
+	result, err := coll.UpdateOne(ctx,
+		bson.M{"_id": Armor.ID},
+		bson.D{
+			{"$set", bson.D{{"Name", temparmor.Name}, {"Icon", temparmor.EncodedIcon}, {"Kind", temparmor.Kind}, {"Rarity", temparmor.Rarity}, {"Defense", temparmor.Defense},
+				{"FireRes", temparmor.FireRes}, {"ThunderRes", temparmor.ThunderRes}, {"WaterRes", temparmor.WaterRes}, {"IceRes", temparmor.IceRes}, {"DragonRes", temparmor.DragonRes},
+				{"PriceForge", temparmor.PriceForge}, {"MaterialForge", temparmor.MaterialForge}, {"QuantityForge", temparmor.QuantityForge},
+				{"PriceUpgrade", temparmor.PriceUpgrade}, {"MaterialUpgrade", temparmor.MaterialUpgrade}, {"QuantityUpgrade", temparmor.QuantityUpgrade}}},
+		},
+	)
+	if err != nil {
+		log.Fatal(err)
+	}
+	fmt.Printf("Updated %v Documents!\n", result.ModifiedCount)
+}
+
+func DeleteOneArmors(client *mongo.Client, ctx context.Context, Armor ArmorStruct) {
+	coll := client.Database("Frontier").Collection("Armors")
+
+	result, err := coll.DeleteOne(ctx,
+		bson.M{"_id": Armor.ID})
+	if err != nil {
+		log.Fatal(err)
+	}
+	fmt.Printf("Deleted  %v Documents!\n", result.DeletedCount)
+}

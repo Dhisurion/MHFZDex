@@ -11,6 +11,7 @@ import (
 	"fyne.io/fyne/v2/container"
 	"fyne.io/fyne/v2/dialog"
 	"fyne.io/fyne/v2/storage"
+	"fyne.io/fyne/v2/theme"
 
 	"fyne.io/fyne/v2/layout"
 	"fyne.io/fyne/v2/widget"
@@ -61,13 +62,12 @@ func (w *win) WeaponUI(app fyne.App) {
 
 	list.OnUnselected = func(id widget.ListItemID) {
 
-		gbox := container.New(layout.NewGridLayout(3), list, addbutton) //remove additional widgets
-		w.window.SetContent(gbox)
-		w.window.Resize(fyne.NewSize(400, 600)) //display gbox
+		gbox := container.New(layout.NewGridLayout(2), container.NewHScroll(list), addbutton) //remove additional widgets
+		w.window.SetContent(gbox)                                                             //display gbox
 		w.window.Show()
 	}
 
-	gbox := container.New(layout.NewGridLayout(3), container.NewHScroll(list), addbutton)
+	gbox := container.New(layout.NewGridLayout(2), container.NewHScroll(list), addbutton)
 
 	w.window.SetContent(gbox)
 	w.window.Resize(fyne.NewSize(100, 600))
@@ -370,7 +370,7 @@ func (w *win) listUpdateWeapon(app fyne.App, id widget.ListItemID) { //function 
 	}
 
 	list.OnUnselected = func(id widget.ListItemID) {
-		gbox := container.New(layout.NewGridLayout(3), list, addbutton)
+		gbox := container.New(layout.NewGridLayout(2), container.NewHScroll(list), addbutton)
 		w.window.SetContent(gbox)
 		w.window.Show()
 	}
@@ -583,7 +583,7 @@ func (w *win) weapon_updatebutton(app fyne.App, Weapon WeaponStruct, id widget.L
 			}
 
 			//Material-Upgrade
-			if InputMaterialForge1.Text != "" {
+			if InputMaterialUpgrade1.Text != "" {
 				tempweapon.MaterialUpgrade[0] = InputMaterialUpgrade1.Text
 			}
 			if InputMaterialUpgrade2.Text != "" {
@@ -638,8 +638,8 @@ func (w *win) weapon_deletebutton(app fyne.App, Weapon WeaponStruct, id widget.L
 		if id < 0 {
 			id = 0 //set id back to 0 , array out of bounds otherwise -> -1
 			list := initemptylist()
-			addbutton := w.item_addbutton(app, id)
-			gbox := container.NewGridWithColumns(3, list, addbutton)
+			addbutton := w.weapon_addbutton(app, id)
+			gbox := container.NewGridWithColumns(2, container.NewHScroll(list), addbutton)
 			w.window.SetContent(gbox)
 			w.window.Show()
 		}
@@ -654,7 +654,7 @@ func initList_Weapon(Weapons []WeaponStruct, id widget.ListItemID) (*widget.List
 			return len(Weapons)
 		},
 		func() fyne.CanvasObject {
-			return container.NewHBox(widget.NewIcon(fyne.NewStaticResource("Weapon", weapon.icon)), widget.NewLabel("Template Object"), widget.NewLabel("Template Object"), widget.NewLabel("Template Object"), widget.NewLabel("Template Object"), widget.NewLabel("Template Object"), widget.NewLabel("Template Object"), widget.NewLabel("Template Object"), widget.NewLabel("Template Object"), widget.NewLabel("Template Object"))
+			return container.NewHBox(widget.NewIcon(fyne.NewStaticResource("Weapon", theme.AccountIcon().Content())), widget.NewLabel("Template Object"), widget.NewLabel("Template Object"), widget.NewLabel("Template Object"), widget.NewLabel("Template Object"), widget.NewLabel("Template Object"), widget.NewLabel("Template Object"), widget.NewLabel("Template Object"), widget.NewLabel("Template Object"), widget.NewLabel("Template Object"))
 		},
 		func(id widget.ListItemID, obj fyne.CanvasObject) {
 			c := obj.(*fyne.Container)

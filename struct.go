@@ -21,15 +21,6 @@ type win struct {
 	window  fyne.Window
 }
 
-/*ar apps = []Monster{
-	{1, main.Rathalos, "Rathalos"},
-	{2, main.Seregios, "Sergios"},
-}*/
-
-/*type MonsterList struct {
-	Monsters []Monster
-}*/
-
 //Item
 type ItemStruct struct {
 	icon    []byte
@@ -128,4 +119,46 @@ type TempMonsterStruct struct {
 	ZRMat       [10]string `json:"MaterialsZenithRank" bson:"MaterialsZenithRank,omitempty"`
 	EncodedIcon string     `json:"Icon" bson:"Icon,omitempty"`
 	EncodedPic  string     `json:"Pic" bson:"Pic,omitempty"`
+}
+
+//Armor
+
+type ArmorStruct struct {
+	icon            []byte
+	ID              primitive.ObjectID `bson:"_id,omitempty"`
+	Name            string             `json:"Name" bson:"Name"`
+	Kind            string             `json:"Kind" bson:"Kind"`
+	Rarity          int                `json:"Rarity" bson:"Rarity"`
+	Defense         int                `json:"Defense" bson:"Defense"`
+	FireRes         int                `json:"FireRes" bson:"FireRes"`
+	ThunderRes      int                `json:"ThunderRes" bson:"ThunderRes"`
+	WaterRes        int                `json:"WaterRes" bson:"WaterRes"`
+	IceRes          int                `json:"IceRes" bson:"IceRes"`
+	DragonRes       int                `json:"DragonRes" bson:"DragonRes"`
+	PriceForge      int                `json:"PriceForge" bson:"PriceForge"`
+	PriceUpgrade    int                `json:"PriceUpgrade" bson:"PriceUpgrade"`
+	MaterialForge   [4]string          `json:"MaterialForge" bson:"MaterialForge"`
+	QuantityForge   [4]int             `json:"QuantityForge" bson:"QuantityForge"`
+	MaterialUpgrade [4]string          `json:"MaterialUpgrade" bson:"MaterialUpgrade"`
+	QuantityUpgrade [4]int             `json:"QuantityUpgrade" bson:"QuantityUpgrade"`
+	EncodedIcon     string             `json:"Icon" bson:"Icon"`
+}
+
+type TempArmorStruct struct {
+	Name            string    `json:"Name" bson:"Name"`
+	Kind            string    `json:"Kind" bson:"Kind"`
+	Rarity          int       `json:"Rarity" bson:"Rarity"`
+	Defense         int       `json:"Defense" bson:"Defense"`
+	FireRes         int       `json:"FireRes" bson:"FireRes"`
+	ThunderRes      int       `json:"ThunderRes" bson:"ThunderRes"`
+	WaterRes        int       `json:"WaterRes" bson:"WaterRes"`
+	IceRes          int       `json:"IceRes" bson:"IceRes"`
+	DragonRes       int       `json:"DragonRes" bson:"DragonRes"`
+	PriceForge      int       `json:"PriceForge" bson:"PriceForge"`
+	PriceUpgrade    int       `json:"PriceUpgrade" bson:"PriceUpgrade"`
+	MaterialForge   [4]string `json:"MaterialForge" bson:"MaterialForge"`
+	QuantityForge   [4]int    `json:"QuantityForge" bson:"QuantityForge"`
+	MaterialUpgrade [4]string `json:"MaterialUpgrade" bson:"MaterialUpgrade"`
+	QuantityUpgrade [4]int    `json:"QuantityUpgrade" bson:"QuantityUpgrade"`
+	EncodedIcon     string    `json:"Icon" bson:"Icon"`
 }

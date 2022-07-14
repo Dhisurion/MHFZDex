@@ -22,7 +22,7 @@ func (w *win) ItemUI(app fyne.App) {
 	var id widget.ListItemID
 	Items := decodeitems()
 
-	itembuttons := w.item_addbutton(app, id)
+	addbutton := w.item_addbutton(app, id)
 
 	list, id := initList_Item(Items, id)
 	list.Resize(fyne.NewSize(25, 25))
@@ -39,9 +39,9 @@ func (w *win) ItemUI(app fyne.App) {
 		cancel := widget.NewButton("Cancel", func() {
 			w.window.Close()
 		})
-		choice := container.New(layout.NewVBoxLayout(), itemname, updatebutton, deletebutton, cancel)
+		buttons := container.New(layout.NewVBoxLayout(), itemname, addbutton, updatebutton, deletebutton, cancel)
 
-		gbox := container.New(layout.NewGridLayout(3), list, choice, itembuttons, icon) //display gbox
+		gbox := container.New(layout.NewGridLayout(2), container.NewHScroll(list), buttons, icon) //display gbox
 		w.window.SetContent(gbox)
 		w.window.Show()
 
@@ -49,12 +49,12 @@ func (w *win) ItemUI(app fyne.App) {
 
 	list.OnUnselected = func(id widget.ListItemID) {
 
-		gbox := container.New(layout.NewGridLayout(3), list, itembuttons) //remove additional widgets
-		w.window.SetContent(gbox)                                         //display gbox
+		gbox := container.New(layout.NewGridLayout(2), container.NewHScroll(list), addbutton) //remove additional widgets
+		w.window.SetContent(gbox)                                                             //display gbox
 		w.window.Show()
 	}
 
-	gbox := container.New(layout.NewGridLayout(3), list, itembuttons)
+	gbox := container.New(layout.NewGridLayout(2), container.NewHScroll(list), addbutton)
 
 	w.window.SetContent(gbox)
 
@@ -113,7 +113,7 @@ func (w *win) item_addbutton(app fyne.App, id widget.ListItemID) fyne.CanvasObje
 
 		})
 
-		wInput.SetContent(container.New(layout.NewVBoxLayout(), TextItemName, InputItemName, InputItemIcon, TextItemRarity, InputItemRarity, TextItemQty, InputItemQty, TextItemSell, InputItemSell, TextItemBuy, InputItemBuy, addData, cancel)) //Layout for the "Insertion-Window"
+		wInput.SetContent(container.NewHScroll(container.New(layout.NewVBoxLayout(), TextItemName, InputItemName, InputItemIcon, TextItemRarity, InputItemRarity, TextItemQty, InputItemQty, TextItemSell, InputItemSell, TextItemBuy, InputItemBuy, addData, cancel))) //Layout for the "Insertion-Window"
 		wInput.Resize(fyne.NewSize(400, 200))
 		wInput.CenterOnScreen()
 		wInput.Show()
@@ -124,7 +124,7 @@ func (w *win) item_addbutton(app fyne.App, id widget.ListItemID) fyne.CanvasObje
 
 func (w *win) listUpdateItem(app fyne.App, id widget.ListItemID) { //function updates materials when another Rank was selected
 	Items := decodeitems()
-	itembuttons := w.item_addbutton(app, id)
+	addbutton := w.item_addbutton(app, id)
 
 	Itemicon := widget.NewIcon(fyne.NewStaticResource("icon", Items[id].icon))
 
@@ -137,7 +137,7 @@ func (w *win) listUpdateItem(app fyne.App, id widget.ListItemID) { //function up
 	cancel := widget.NewButton("Cancel", func() {
 		w.window.Close()
 	})
-	choice := container.New(layout.NewVBoxLayout(), itemname, updatebutton, deletebutton, cancel)
+	buttons := container.New(layout.NewVBoxLayout(), itemname, addbutton, updatebutton, deletebutton, cancel)
 
 	list, id := initList_Item(Items, id)
 
@@ -153,9 +153,9 @@ func (w *win) listUpdateItem(app fyne.App, id widget.ListItemID) { //function up
 		cancel := widget.NewButton("Cancel", func() {
 			w.window.Close()
 		})
-		choice := container.New(layout.NewVBoxLayout(), itemname, updatebutton, deletebutton, cancel)
+		buttons := container.New(layout.NewVBoxLayout(), itemname, addbutton, updatebutton, deletebutton, cancel)
 
-		gbox := container.New(layout.NewGridLayout(3), list, choice, itembuttons, icon) //display gbox
+		gbox := container.New(layout.NewGridLayout(2), container.NewHScroll(list), buttons, icon) //display gbox
 		w.window.SetContent(gbox)
 		w.window.Show()
 
@@ -163,12 +163,12 @@ func (w *win) listUpdateItem(app fyne.App, id widget.ListItemID) { //function up
 
 	list.OnUnselected = func(id widget.ListItemID) {
 
-		gbox := container.New(layout.NewGridLayout(3), list, itembuttons) //remove additional widgets
-		w.window.SetContent(gbox)                                         //display gbox
+		gbox := container.New(layout.NewGridLayout(2), container.NewHScroll(list), addbutton) //remove additional widgets
+		w.window.SetContent(gbox)                                                             //display gbox
 		w.window.Show()
 	}
 
-	gbox := container.New(layout.NewGridLayout(3), list, choice, itembuttons, Itemicon)
+	gbox := container.New(layout.NewGridLayout(2), container.NewHScroll(list), buttons, Itemicon)
 
 	w.window.SetContent(gbox)
 	w.window.Show()
@@ -245,7 +245,7 @@ func (w *win) item_updatebutton(app fyne.App, Item ItemStruct, id widget.ListIte
 
 		})
 
-		wUpdate.SetContent(container.New(layout.NewVBoxLayout(), TextItemName, InputItemName, InputItemIcon, TextItemRarity, InputItemRarity, TextItemQty, InputItemQty, TextItemSell, InputItemSell, TextItemBuy, InputItemBuy, updateData, cancel)) //Layout for the "Insertion-Window"
+		wUpdate.SetContent(container.NewHScroll(container.New(layout.NewVBoxLayout(), TextItemName, InputItemName, InputItemIcon, TextItemRarity, InputItemRarity, TextItemQty, InputItemQty, TextItemSell, InputItemSell, TextItemBuy, InputItemBuy, updateData, cancel))) //Layout for the "Insertion-Window"
 		wUpdate.Resize(fyne.NewSize(400, 200))
 		wUpdate.CenterOnScreen()
 		wUpdate.Show()
@@ -265,7 +265,7 @@ func (w *win) item_deletebutton(app fyne.App, Item ItemStruct, id widget.ListIte
 			id = 0 //set id back to 0 , array out of bounds otherwise -> -1
 			list := initemptylist()
 			addbutton := w.item_addbutton(app, id)
-			gbox := container.NewGridWithColumns(3, list, addbutton)
+			gbox := container.NewGridWithColumns(2, container.NewHScroll(list), addbutton)
 			w.window.SetContent(gbox)
 			w.window.Show()
 		}

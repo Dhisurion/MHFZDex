@@ -32,7 +32,7 @@ func (w *win) MonsterUI(app fyne.App) {
 	//materialButtons := container.NewHBox()
 	//fmt.Println(Monsters[0].LRMat[0])
 
-	list, id := initlist(Monsters, id)
+	list, id := initlist_Monster(Monsters, id)
 	matlist := initmatlist()
 
 	//materialButtons := w.initmaterialbuttons(app, id, matlist, Monsters)
@@ -40,7 +40,7 @@ func (w *win) MonsterUI(app fyne.App) {
 	addbutton := w.monster_addbutton(app, id, matlist)
 	buttons := container.NewVBox(addbutton)
 
-	gbox := container.New(layout.NewGridLayout(3), list, buttons) //list with no data displayed as long as theres no item selected
+	gbox := container.New(layout.NewGridLayout(3), container.NewHScroll(list), buttons) //list with no data displayed as long as theres no item selected
 
 	list.OnSelected = func(id widget.ListItemID) {
 		//id2 = id
@@ -57,7 +57,7 @@ func (w *win) MonsterUI(app fyne.App) {
 		matlist := initmatlist()
 		materialButtons := w.initmaterialbuttons(app, id, matlist, Monsters)
 		materials := container.NewGridWithRows(2, materialButtons, matlist)
-		gbox = container.New(layout.NewGridLayout(3), list, monsterpic, materials, buttons, weakness) //display gbox
+		gbox = container.New(layout.NewGridLayout(3), container.NewHScroll(list), monsterpic, materials, buttons, weakness) //display gbox
 		w.window.SetContent(gbox)
 		w.window.Show()
 
@@ -65,8 +65,8 @@ func (w *win) MonsterUI(app fyne.App) {
 
 	list.OnUnselected = func(id widget.ListItemID) {
 
-		gbox = container.New(layout.NewGridLayout(3), list, buttons) //remove additional widgets
-		w.window.SetContent(gbox)                                    //display gbox
+		gbox = container.New(layout.NewGridLayout(3), container.NewHScroll(list), buttons) //remove additional widgets
+		w.window.SetContent(gbox)                                                          //display gbox
 		w.window.Show()
 	}
 	//list.Select(125)
@@ -483,7 +483,7 @@ func (w *win) monster_addbutton(app fyne.App, id int, matlist *widget.List) fyne
 
 		})
 
-		wInput.SetContent(container.New(layout.NewVBoxLayout(), MonsterName, monstericon, monsterpic, Weaknesses, inputmats, addData, cancel)) //Layout for the "Insertion-Window"
+		wInput.SetContent(container.NewHScroll(container.New(layout.NewVBoxLayout(), MonsterName, monstericon, monsterpic, Weaknesses, inputmats, addData, cancel))) //Layout for the "Insertion-Window"
 		wInput.Resize(fyne.NewSize(400, 200))
 		wInput.CenterOnScreen()
 		wInput.Show()
@@ -620,7 +620,7 @@ func (w *win) materialsZenith(app fyne.App, Monster MonsterStruct) *widget.List 
 func (w *win) listUpdate(app fyne.App, id widget.ListItemID,
 	matlist *widget.List) { //function updates materials when another Rank was selected
 	Monsters := decodemonsters()
-	list, id := initlist(Monsters, id)
+	list, id := initlist_Monster(Monsters, id)
 	materialButtons := w.initmaterialbuttons(app, id, matlist, Monsters)
 	addbutton := w.monster_addbutton(app, id, matlist)
 	updatebutton := w.monster_updatebutton(app, id, matlist, Monsters[id])
@@ -630,10 +630,10 @@ func (w *win) listUpdate(app fyne.App, id widget.ListItemID,
 	buttons := container.NewVBox(addbutton, updatebutton, deletebutton)
 	weakness := w.weakness(app, list, Monsters[id])
 	materials := container.NewGridWithRows(2, materialButtons, matlist)
-	gbox := container.New(layout.NewGridLayout(3), list, monsterpic, materials, buttons, weakness)
+	gbox := container.New(layout.NewGridLayout(3), container.NewHScroll(list), monsterpic, materials, buttons, weakness)
 
 	list.OnSelected = func(id widget.ListItemID) {
-		//id2 = id
+
 		updatebutton := w.monster_updatebutton(app, id, matlist, Monsters[id])
 		deletebutton := w.monster_deletebutton(app, id, matlist, Monsters[id])
 
@@ -643,7 +643,7 @@ func (w *win) listUpdate(app fyne.App, id widget.ListItemID,
 		matlist := initmatlist()
 		materialButtons := w.initmaterialbuttons(app, id, matlist, Monsters)
 		materials := container.NewGridWithRows(2, materialButtons, matlist)
-		gbox = container.New(layout.NewGridLayout(3), list, monsterpic, materials, buttons, weakness) //display gbox
+		gbox = container.New(layout.NewGridLayout(3), container.NewHScroll(list), monsterpic, materials, buttons, weakness) //display gbox
 		w.window.SetContent(gbox)
 		w.window.Show()
 
@@ -671,7 +671,7 @@ func initmatlist() *widget.List {
 	return matlist
 }
 
-func initlist(Monsters []MonsterStruct, id widget.ListItemID) (*widget.List, widget.ListItemID) {
+func initlist_Monster(Monsters []MonsterStruct, id widget.ListItemID) (*widget.List, widget.ListItemID) {
 
 	list := widget.NewList(
 		func() int {
@@ -1270,7 +1270,7 @@ func (w *win) monster_updatebutton(app fyne.App, id int, matlist *widget.List, M
 
 		})
 
-		wInput.SetContent(container.New(layout.NewVBoxLayout(), MonsterName, monstericon, monsterpic, Weaknesses, inputmats, updateData, cancel)) //Layout for the "Insertion-Window"
+		wInput.SetContent(container.NewHScroll(container.New(layout.NewVBoxLayout(), MonsterName, monstericon, monsterpic, Weaknesses, inputmats, updateData, cancel))) //Layout for the "Insertion-Window"
 		wInput.Resize(fyne.NewSize(400, 200))
 		wInput.CenterOnScreen()
 		wInput.Show()
@@ -1290,7 +1290,7 @@ func (w *win) monster_deletebutton(app fyne.App, id int, matlist *widget.List, M
 			id = 0
 			list := initemptylist()
 			addbutton := w.monster_addbutton(app, id, matlist)
-			gbox := container.NewGridWithColumns(3, list, addbutton)
+			gbox := container.NewGridWithColumns(3, container.NewHScroll(list), addbutton)
 			w.window.SetContent(gbox)
 			w.window.Show()
 

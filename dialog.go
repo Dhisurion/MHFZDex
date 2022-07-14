@@ -69,16 +69,16 @@ func imageOpenedWeaponIcon(f fyne.URIReadCloser, tempweapon TempWeaponStruct) st
 
 //Armor Dialog
 
-func imageOpenedArmorIcon(f fyne.URIReadCloser) {
+func imageOpenedArmorIcon(f fyne.URIReadCloser, temparmor TempArmorStruct) string {
 	if f == nil {
 		log.Println("Cancelled")
-		return
+		return ""
 	}
 	defer f.Close()
 
 	selectedArmoricon = loadImage(f)
-	//temparmor.EncodedIcon = base64.StdEncoding.EncodeToString([]byte(selectedArmoricon.Resource.Content()))
-
+	temparmor.EncodedIcon = base64.StdEncoding.EncodeToString([]byte(selectedArmoricon.Resource.Content()))
+	return temparmor.EncodedIcon
 }
 
 //Other Image Functions

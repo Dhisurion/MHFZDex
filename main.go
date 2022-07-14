@@ -15,16 +15,7 @@ import (
 	"fyne.io/fyne/v2/widget"
 )
 
-//var monster MonsterStruct
-//var item ItemStruct
-var weapon WeaponStruct
-
-//var tempweapon TempWeaponStruct
-
-//var Monster[] MonsterStruct
-
 func main() {
-	//loadIcons()
 
 	//Start DB
 	// Get Client, Context, CancelFunc and
