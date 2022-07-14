@@ -24,7 +24,7 @@ func (w *win) WeaponUI(app fyne.App) {
 	weaponbuttons := w.weapon_addbutton(app, id)
 
 	list, id := initList_Weapon(Weapons, id)
-
+	list.Resize(fyne.NewSize(25, 25))
 	list.OnSelected = func(id widget.ListItemID) {
 		icon := widget.NewIcon(fyne.NewStaticResource("icon", Weapons[id].icon))
 
@@ -39,7 +39,7 @@ func (w *win) WeaponUI(app fyne.App) {
 		})
 		choice := container.New(layout.NewVBoxLayout(), weaponname, updatebutton, deletebutton, cancel)
 		weaponmaterial := w.weaponmaterial(app, list, Weapons[id])
-		gbox := container.New(layout.NewGridLayout(3), list, choice, weaponbuttons, weaponmaterial, icon) //display gbox
+		gbox := container.New(layout.NewGridLayout(3), container.NewHScroll(list), choice, weaponbuttons, weaponmaterial, icon) //display gbox
 		w.window.SetContent(gbox)
 		w.window.Show()
 
@@ -48,14 +48,15 @@ func (w *win) WeaponUI(app fyne.App) {
 	list.OnUnselected = func(id widget.ListItemID) {
 
 		gbox := container.New(layout.NewGridLayout(3), list, weaponbuttons) //remove additional widgets
-		w.window.SetContent(gbox)                                           //display gbox
+		w.window.SetContent(gbox)
+		w.window.Resize(fyne.NewSize(400, 600)) //display gbox
 		w.window.Show()
 	}
 
-	gbox := container.New(layout.NewGridLayout(3), list, weaponbuttons)
+	gbox := container.New(layout.NewGridLayout(3), container.NewHScroll(list), weaponbuttons)
 
 	w.window.SetContent(gbox)
-
+	w.window.Resize(fyne.NewSize(100, 600))
 	w.window.Show()
 }
 
@@ -104,8 +105,8 @@ func (w *win) weapon_addbutton(app fyne.App, id widget.ListItemID) fyne.CanvasOb
 	add := widget.NewButton("Add", func() { //Button to Add Data
 		wInput := app.NewWindow("Add Data")
 
-		TextWeaponName := canvas.NewText("Weaponname:", color.White)
-		TextWeaponKind := canvas.NewText("Type of Weapon:", color.White)
+		TextWeaponName := canvas.NewText("Name:", color.White)
+		TextWeaponKind := canvas.NewText("Type:", color.White)
 		TextWeaponRarity := canvas.NewText("Rarity:", color.White)
 		TextWeaponAttack := canvas.NewText("Attack:", color.White)
 		TextWeaponElement := canvas.NewText("Element:", color.White)
@@ -447,6 +448,7 @@ func initList_Weapon(Weapons []WeaponStruct, id widget.ListItemID) (*widget.List
 		},
 	)
 	return list, id
+
 }
 
 func (W *win) weaponmaterial(app fyne.App, li *widget.List, Weapon WeaponStruct) fyne.CanvasObject {

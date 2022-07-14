@@ -25,6 +25,7 @@ func (w *win) ItemUI(app fyne.App) {
 	itembuttons := w.item_addbutton(app, id)
 
 	list, id := initList_Item(Items, id)
+	list.Resize(fyne.NewSize(25, 25))
 
 	list.OnSelected = func(id widget.ListItemID) {
 		icon := widget.NewIcon(fyne.NewStaticResource("icon", Items[id].icon))

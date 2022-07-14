@@ -93,6 +93,5 @@ func WeaponWindow() *win { //launches WeaponWindow
 func ArmorWindow() *win { //launches ArmorWindow
 	return &win{
 		buttons: map[string]*widget.Button{},
-		window:  nil,
 	}
 }

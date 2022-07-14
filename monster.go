@@ -65,10 +65,10 @@ func (w *win) MonsterUI(app fyne.App) {
 		w.window.SetContent(gbox)                                    //display gbox
 		w.window.Show()
 	}
-	list.Select(125)
+	//list.Select(125)
 
 	w.window.SetContent(gbox) //Layout for the whole Monster-Window
-	w.window.Resize(fyne.NewSize(400, 600))
+	//w.window.Resize(fyne.NewSize(400, 600))
 	w.window.Show()
 
 }
