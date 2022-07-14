@@ -261,8 +261,9 @@ func (w *win) monster_addbutton(app fyne.App, id int, matlist *widget.List) fyne
 		)
 
 		inputmats := container.NewGridWithColumns(6,
-			container.NewGridWithRows(10,
+			container.NewGridWithRows(11,
 				widget.NewLabel("Rank:"),
+				widget.NewLabel("Item:"),
 				widget.NewLabel("Item:"),
 				widget.NewLabel("Item:"),
 				widget.NewLabel("Item:"),
@@ -273,7 +274,7 @@ func (w *win) monster_addbutton(app fyne.App, id int, matlist *widget.List) fyne
 				widget.NewLabel("Item:"),
 				widget.NewLabel("Item:")),
 
-			container.NewGridWithRows(10,
+			container.NewGridWithRows(11,
 				widget.NewLabel("Low:"),
 				InputLRMat0,
 				InputLRMat1,
@@ -286,7 +287,7 @@ func (w *win) monster_addbutton(app fyne.App, id int, matlist *widget.List) fyne
 				InputLRMat8,
 				InputLRMat9),
 
-			container.NewGridWithRows(10,
+			container.NewGridWithRows(11,
 				widget.NewLabel("High:"),
 				InputHRMat0,
 				InputHRMat1,
@@ -299,7 +300,7 @@ func (w *win) monster_addbutton(app fyne.App, id int, matlist *widget.List) fyne
 				InputHRMat8,
 				InputHRMat9),
 
-			container.NewGridWithRows(10,
+			container.NewGridWithRows(11,
 				widget.NewLabel("Gou:"),
 				InputGouRMat0,
 				InputGouRMat1,
@@ -312,7 +313,7 @@ func (w *win) monster_addbutton(app fyne.App, id int, matlist *widget.List) fyne
 				InputGouRMat8,
 				InputGouRMat9),
 
-			container.NewGridWithRows(10,
+			container.NewGridWithRows(11,
 				widget.NewLabel("G:"),
 				InputGRMat0,
 				InputGRMat1,
@@ -325,7 +326,7 @@ func (w *win) monster_addbutton(app fyne.App, id int, matlist *widget.List) fyne
 				InputGRMat8,
 				InputGRMat9),
 
-			container.NewGridWithRows(10,
+			container.NewGridWithRows(11,
 				widget.NewLabel("Zenith:"),
 				InputZRMat0,
 				InputZRMat1,
@@ -421,6 +422,7 @@ func (w *win) monster_addbutton(app fyne.App, id int, matlist *widget.List) fyne
 			/*Get Materials*/
 			//Low Rank Mats
 			tempmonster.LRMat[0] = InputLRMat0.Text
+			tempmonster.LRMat[1] = InputLRMat1.Text
 			tempmonster.LRMat[2] = InputLRMat2.Text
 			tempmonster.LRMat[3] = InputLRMat3.Text
 			tempmonster.LRMat[4] = InputLRMat4.Text
@@ -589,7 +591,7 @@ func (w *win) materialsG(app fyne.App, Monster MonsterStruct) *widget.List {
 		func(id widget.ListItemID, obj fyne.CanvasObject) {
 			c := obj.(*fyne.Container)
 			c.Objects[0].(*widget.Icon).SetResource(fyne.NewStaticResource(Monster.Name, Monster.icon)) //assigns monster icon to list
-			c.Objects[1].(*widget.Label).SetText(Monster.ZRMat[id])                                     //assigns monster name to list
+			c.Objects[1].(*widget.Label).SetText(Monster.GRMat[id])                                     //assigns monster name to list
 		},
 	)
 
@@ -609,7 +611,7 @@ func (w *win) materialsZenith(app fyne.App, Monster MonsterStruct) *widget.List 
 		func(id widget.ListItemID, obj fyne.CanvasObject) {
 			c := obj.(*fyne.Container)
 			c.Objects[0].(*widget.Icon).SetResource(fyne.NewStaticResource(Monster.Name, Monster.icon)) //assigns monster icon to list
-			c.Objects[1].(*widget.Label).SetText(Monster.GRMat[id])                                     //assigns monster name to list
+			c.Objects[1].(*widget.Label).SetText(Monster.ZRMat[id])                                     //assigns monster name to list
 		},
 	)
 
@@ -878,8 +880,9 @@ func (w *win) monster_updatebutton(app fyne.App, id int, matlist *widget.List, M
 		)
 
 		inputmats := container.NewGridWithColumns(6,
-			container.NewGridWithRows(10,
+			container.NewGridWithRows(11,
 				widget.NewLabel("Rank:"),
+				widget.NewLabel("Item:"),
 				widget.NewLabel("Item:"),
 				widget.NewLabel("Item:"),
 				widget.NewLabel("Item:"),
@@ -890,7 +893,7 @@ func (w *win) monster_updatebutton(app fyne.App, id int, matlist *widget.List, M
 				widget.NewLabel("Item:"),
 				widget.NewLabel("Item:")),
 
-			container.NewGridWithRows(10,
+			container.NewGridWithRows(11,
 				widget.NewLabel("Low:"),
 				InputLRMat0,
 				InputLRMat1,
@@ -903,7 +906,7 @@ func (w *win) monster_updatebutton(app fyne.App, id int, matlist *widget.List, M
 				InputLRMat8,
 				InputLRMat9),
 
-			container.NewGridWithRows(10,
+			container.NewGridWithRows(11,
 				widget.NewLabel("High:"),
 				InputHRMat0,
 				InputHRMat1,
@@ -916,7 +919,7 @@ func (w *win) monster_updatebutton(app fyne.App, id int, matlist *widget.List, M
 				InputHRMat8,
 				InputHRMat9),
 
-			container.NewGridWithRows(10,
+			container.NewGridWithRows(11,
 				widget.NewLabel("Gou:"),
 				InputGouRMat0,
 				InputGouRMat1,
@@ -929,7 +932,7 @@ func (w *win) monster_updatebutton(app fyne.App, id int, matlist *widget.List, M
 				InputGouRMat8,
 				InputGouRMat9),
 
-			container.NewGridWithRows(10,
+			container.NewGridWithRows(11,
 				widget.NewLabel("G:"),
 				InputGRMat0,
 				InputGRMat1,
@@ -942,7 +945,7 @@ func (w *win) monster_updatebutton(app fyne.App, id int, matlist *widget.List, M
 				InputGRMat8,
 				InputGRMat9),
 
-			container.NewGridWithRows(10,
+			container.NewGridWithRows(11,
 				widget.NewLabel("Zenith:"),
 				InputZRMat0,
 				InputZRMat1,
@@ -990,7 +993,10 @@ func (w *win) monster_updatebutton(app fyne.App, id int, matlist *widget.List, M
 		})
 
 		updateData := widget.NewButton("Update", func() { //Button to add into MonsterName typed Data
-			tempmonster.Name = MonsterName.Text
+			if MonsterName.Text != "" {
+
+				tempmonster.Name = MonsterName.Text
+			}
 
 			/*Get Element-Weaknesses*/
 			//Get Fire-Values
@@ -1260,6 +1266,7 @@ func (w *win) monster_updatebutton(app fyne.App, id int, matlist *widget.List, M
 			if InputZRMat9.Text != "" {
 				tempmonster.ZRMat[9] = InputZRMat9.Text
 			}
+			matlist := initmatlist()
 			UpdateOneMonster(client, ctx, Monster, tempmonster)
 			w.listUpdate(app, id, matlist)
 			wInput.Close()
