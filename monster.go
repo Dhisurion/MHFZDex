@@ -47,7 +47,11 @@ func (w *win) MonsterUI(app fyne.App) {
 		updatebutton := w.monster_updatebutton(app, id, matlist, Monsters[id])
 		deletebutton := w.monster_deletebutton(app, id, matlist, Monsters[id])
 
-		buttons = container.NewVBox(addbutton, updatebutton, deletebutton)
+		cancel := widget.NewButton("Cancel", func() {
+			w.window.Close()
+		})
+
+		buttons = container.NewVBox(addbutton, updatebutton, deletebutton, cancel)
 		monsterpic = widget.NewIcon(fyne.NewStaticResource("icon", Monsters[id].pic))
 		weakness := w.weakness(app, list, Monsters[id]) //assigns fyne.CanvasObject(GridWithColumns) to variable weakness
 		matlist := initmatlist()
