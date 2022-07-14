@@ -633,7 +633,7 @@ func (w *win) weapon_deletebutton(app fyne.App, Weapon WeaponStruct, id widget.L
 		DeleteOneWeapon(client, ctx, Weapon)
 		id = id - 1
 		if id >= 0 {
-			w.listUpdateItem(app, id)
+			w.listUpdateWeapon(app, id)
 		}
 		if id < 0 {
 			id = 0 //set id back to 0 , array out of bounds otherwise -> -1
