@@ -19,7 +19,7 @@ import (
 //var item ItemStruct
 var weapon WeaponStruct
 
-var tempweapon TempWeaponStruct
+//var tempweapon TempWeaponStruct
 
 //var Monster[] MonsterStruct
 

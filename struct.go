@@ -54,37 +54,43 @@ type TempItemStruct struct {
 
 //Weapon
 type WeaponStruct struct {
-	icon         []byte
-	ID           primitive.ObjectID `bson:"_id,omitempty"`
-	Name         string             `json:"Name" bson:"Name"`
-	Kind         string             `json:"Kind" bson:"Kind"`
-	Rarity       int                `json:"Rarity" bson:"Rarity"`
-	Attack       int                `json:"Attack" bson:"Attack"`
-	Element      string             `json:"Element" bson:"Element"`
-	Elementvalue int                `json:"Elementvalue" bson:"Elementvalue"`
-	Sharpness    string             `json:"Sharpness" bson:"Sharpness"`
-	Affinity     int                `json:"Affinity" bson:"Affinity"`
-	Defense      int                `json:"Defense" bson:"Defense"`
-	Price        int                `json:"Price" bson:"Price"`
-	Material     [4]string          `json:"Material" bson:"Material"`
-	Quantity     [4]int             `json:"Quantity" bson:"Quantity"`
-	Encoded      string             `json:"Icon" bson:"Icon"`
+	icon            []byte
+	ID              primitive.ObjectID `bson:"_id,omitempty"`
+	Name            string             `json:"Name" bson:"Name"`
+	Kind            string             `json:"Kind" bson:"Kind"`
+	Rarity          int                `json:"Rarity" bson:"Rarity"`
+	Attack          int                `json:"Attack" bson:"Attack"`
+	Element         string             `json:"Element" bson:"Element"`
+	Elementvalue    int                `json:"Elementvalue" bson:"Elementvalue"`
+	Sharpness       string             `json:"Sharpness" bson:"Sharpness"`
+	Affinity        int                `json:"Affinity" bson:"Affinity"`
+	Defense         int                `json:"Defense" bson:"Defense"`
+	PriceForge      int                `json:"PriceForge" bson:"PriceForge"`
+	PriceUpgrade    int                `json:"PriceUpgrade" bson:"PriceUpgrade"`
+	MaterialForge   [4]string          `json:"MaterialForge" bson:"MaterialForge"`
+	QuantityForge   [4]int             `json:"QuantityForge" bson:"QuantityForge"`
+	MaterialUpgrade [4]string          `json:"MaterialUpgrade" bson:"MaterialUpgrade"`
+	QuantityUpgrade [4]int             `json:"QuantityUpgrade" bson:"QuantityUpgrade"`
+	Encoded         string             `json:"Icon" bson:"Icon"`
 }
 
 type TempWeaponStruct struct {
-	Name         string    `json:"Name" bson:"Name"`
-	Kind         string    `json:"Kind" bson:"Kind"` //weapontype but type is a bad declaration
-	Rarity       int       `json:"Rarity" bson:"Rarity"`
-	Attack       int       `json:"Attack" bson:"Attack"`
-	Element      string    `json:"Element" bson:"Element"`
-	Elementvalue int       `json:"Elementvalue" bson:"Elementvalue"`
-	Sharpness    string    `json:"Sharpness" bson:"Sharpness"`
-	Affinity     int       `json:"Affinity" bson:"Affinity"`
-	Defense      int       `json:"Defense" bson:"Defense"`
-	Price        int       `json:"Price" bson:"Price"`
-	Material     [4]string `json:"Material" bson:"Material"`
-	Quantity     [4]int    `json:"Quantity" bson:"Quantity"`
-	EncodedIcon  string    `json:"Icon" bson:"Icon"`
+	Name            string    `json:"Name" bson:"Name"`
+	Kind            string    `json:"Kind" bson:"Kind"` //weapontype but type is a bad declaration
+	Rarity          int       `json:"Rarity" bson:"Rarity"`
+	Attack          int       `json:"Attack" bson:"Attack"`
+	Element         string    `json:"Element" bson:"Element"`
+	Elementvalue    int       `json:"Elementvalue" bson:"Elementvalue"`
+	Sharpness       string    `json:"Sharpness" bson:"Sharpness"`
+	Affinity        int       `json:"Affinity" bson:"Affinity"`
+	Defense         int       `json:"Defense" bson:"Defense"`
+	PriceForge      int       `json:"PriceForge" bson:"PriceForge"`
+	PriceUpgrade    int       `json:"PriceUpgrade" bson:"PriceUpgrade"`
+	MaterialForge   [4]string `json:"Material" bson:"Material"`
+	QuantityForge   [4]int    `json:"Quantity" bson:"Quantity"`
+	MaterialUpgrade [4]string `json:"MaterialUpgrade" bson:"MaterialUpgrade"`
+	QuantityUpgrade [4]int    `json:"QuantityUpgrade" bson:"QuantityUpgrade"`
+	EncodedIcon     string    `json:"Icon" bson:"Icon"`
 }
 
 //Monster

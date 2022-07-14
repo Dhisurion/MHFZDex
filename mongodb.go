@@ -176,9 +176,12 @@ func ReadAllWeapons(client *mongo.Client, ctx context.Context) ([]WeaponStruct, 
 	return results, err
 }
 
-func InsertOneWeapon(client *mongo.Client, ctx context.Context) error {
+func InsertOneWeapon(client *mongo.Client, ctx context.Context, tempweapon TempWeaponStruct) error {
 	coll := client.Database("Frontier").Collection("Weapons")
-	doc := bson.D{{"Name", tempweapon.Name}, {"Icon", tempweapon.EncodedIcon}, {"Kind", tempweapon.Kind}, {"Rarity", tempweapon.Rarity}, {"Attack", tempweapon.Attack}, {"Element", tempweapon.Element}, {"Elementvalue", tempweapon.Elementvalue}, {"Sharpness", tempweapon.Sharpness}, {"Affinity", tempweapon.Affinity}, {"Defense", tempweapon.Defense}, {"Price", tempweapon.Price}, {"Material", tempweapon.Material}, {"Quantity", tempweapon.Quantity}}
+	doc := bson.D{{"Name", tempweapon.Name}, {"Icon", tempweapon.EncodedIcon}, {"Kind", tempweapon.Kind}, {"Rarity", tempweapon.Rarity}, {"Attack", tempweapon.Attack},
+		{"Element", tempweapon.Element}, {"Elementvalue", tempweapon.Elementvalue}, {"Sharpness", tempweapon.Sharpness}, {"Affinity", tempweapon.Affinity}, {"Defense", tempweapon.Defense},
+		{"PriceForge", tempweapon.PriceForge}, {"MaterialForge", tempweapon.MaterialForge}, {"QuantityForge", tempweapon.QuantityForge},
+		{"PriceUpgrade", tempweapon.PriceUpgrade}, {"MaterialUpgrade", tempweapon.MaterialUpgrade}, {"QuantityUpgrade", tempweapon.QuantityUpgrade}}
 	result, err := coll.InsertOne(context.TODO(), doc)
 
 	if err != nil {
@@ -187,13 +190,16 @@ func InsertOneWeapon(client *mongo.Client, ctx context.Context) error {
 	return err
 }
 
-func UpdateOneWeapon(client *mongo.Client, ctx context.Context, Weapon WeaponStruct) {
+func UpdateOneWeapon(client *mongo.Client, ctx context.Context, Weapon WeaponStruct, tempweapon TempWeaponStruct) {
 	coll := client.Database("Frontier").Collection("Weapons")
 
 	result, err := coll.UpdateOne(ctx,
 		bson.M{"_id": Weapon.ID},
 		bson.D{
-			{"$set", bson.D{{"Name", tempweapon.Name}, {"Icon", tempweapon.EncodedIcon}, {"Kind", tempweapon.Kind}, {"Rarity", tempweapon.Rarity}, {"Attack", tempweapon.Attack}, {"Element", tempweapon.Element}, {"Elementvalue", tempweapon.Elementvalue}, {"Sharpness", tempweapon.Sharpness}, {"Affinity", tempweapon.Affinity}, {"Defense", tempweapon.Defense}, {"Price", tempweapon.Price}, {"Material", tempweapon.Material}, {"Quantity", tempweapon.Quantity}}},
+			{"$set", bson.D{{"Name", tempweapon.Name}, {"Icon", tempweapon.EncodedIcon}, {"Kind", tempweapon.Kind}, {"Rarity", tempweapon.Rarity}, {"Attack", tempweapon.Attack},
+				{"Element", tempweapon.Element}, {"Elementvalue", tempweapon.Elementvalue}, {"Sharpness", tempweapon.Sharpness}, {"Affinity", tempweapon.Affinity}, {"Defense", tempweapon.Defense},
+				{"PriceForge", tempweapon.PriceForge}, {"MaterialForge", tempweapon.MaterialForge}, {"QuantityForge", tempweapon.QuantityForge},
+				{"PriceUpgrade", tempweapon.PriceUpgrade}, {"MaterialUpgrade", tempweapon.MaterialUpgrade}, {"QuantityUpgrade", tempweapon.QuantityUpgrade}}},
 		},
 	)
 	if err != nil {
