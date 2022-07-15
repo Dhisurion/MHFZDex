@@ -88,7 +88,7 @@ func (w *win) item_addbutton(app fyne.App, id widget.ListItemID) fyne.CanvasObje
 					return
 				}
 
-				imageOpenedItemIcon(reader, tempitem)
+				tempitem.EncodedIcon = imageOpenedItemIcon(reader, tempitem)
 			}, wInput)
 			fd.SetFilter(storage.NewExtensionFileFilter([]string{".png", ".jpg", ".jpeg"}))
 			fd.Show()
